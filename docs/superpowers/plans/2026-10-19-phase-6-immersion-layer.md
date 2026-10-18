@@ -124,11 +124,11 @@
     - `render(dt: number, now: number, isReducedMotion: boolean): void`
     - `dispose(): void`
 
-- [ ] **Step 1: Write failing unit tests for `ThreeNetworkRenderer`**
+- [x] **Step 1: Write failing unit tests for `ThreeNetworkRenderer`**
   - Mock WebGL context / Three.js objects for test environment.
   - Verify initialization, node/connection object creation, depth calculation, raycasting hit detection, and clean disposal.
-- [ ] **Step 2: Run tests to verify failure**
-- [ ] **Step 3: Implement `src/lib/network/three-renderer.ts`**
+- [x] **Step 2: Run tests to verify failure**
+- [x] **Step 3: Implement `src/lib/network/three-renderer.ts`**
   - Three.js scene, perspective camera, WebGLRenderer with alpha and antialias.
   - Map 2D graph $(x, y)$ coordinates to 3D scene $(x, y, z)$ with layer-dependent depth spread.
   - Post neurons rendered with distinct glowing spherical geometry and outer halo ring.
@@ -137,9 +137,9 @@
   - Raycaster for pointer hover and click detection.
   - Camera tilt driven by cursor coordinates; slow ambient camera drift (disabled in reduced motion).
   - Complete memory cleanup: dispose geometries, materials, renderer context.
-- [ ] **Step 4: Export `ThreeNetworkRenderer` from `src/lib/network/index.ts`**
-- [ ] **Step 5: Run tests to verify all tests pass**
-- [ ] **Step 6: Commit changes**
+- [x] **Step 4: Export `ThreeNetworkRenderer` from `src/lib/network/index.ts`**
+- [x] **Step 5: Run tests to verify all tests pass**
+- [x] **Step 6: Commit changes**
 
 ---
 
