@@ -282,4 +282,16 @@ describe("Search Index Engine & MiniSearch Integration", () => {
     // Must be well below 10ms (performance budget is 50ms)
     expect(averageMs).toBeLessThan(10);
   });
+
+  it("handles completely empty collections and special character queries gracefully", () => {
+    const emptyEngine = buildSearchIndex([], [], []);
+    expect(emptyEngine.search("")).toEqual([]);
+    expect(emptyEngine.search("query")).toEqual([]);
+    expect(emptyEngine.getDefaults()).toEqual([]);
+
+    const engine = buildSearchIndex(mockPosts, mockSeries, mockTopics, mockActions);
+    expect(() => engine.search("!@#$%^&*()_+{}[]:;\"'<>?,./")).not.toThrow();
+    const symbolResults = engine.search("!@#$%^&*()");
+    expect(Array.isArray(symbolResults)).toBe(true);
+  });
 });

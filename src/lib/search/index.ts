@@ -27,9 +27,14 @@ export function buildSearchIndex(
       usedIds.add(rawId);
       return rawId;
     }
-    const scoped = `${prefix}-${rawId}`;
-    usedIds.add(scoped);
-    return scoped;
+    let candidate = `${prefix}-${rawId}`;
+    let counter = 1;
+    while (usedIds.has(candidate)) {
+      candidate = `${prefix}-${rawId}-${counter}`;
+      counter++;
+    }
+    usedIds.add(candidate);
+    return candidate;
   }
 
   // 1. Index Posts
@@ -167,7 +172,7 @@ export function buildSearchIndex(
 
   return {
     index: miniSearch,
-    getDefaults: () => defaultResults,
+    getDefaults: () => [...defaultResults],
     search: (query: string): SearchResult[] => {
       if (!query || query.trim() === "") {
         return defaultResults;
