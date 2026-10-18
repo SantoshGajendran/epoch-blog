@@ -54,4 +54,10 @@ export const graphConfig: GraphConfig = graphConfigSchema.parse({
     layerStaggerMs: 240,
     rowStaggerMs: 70,
   },
+  three: {
+    cameraFov: 45,
+    depthSpread: 120,
+    tiltSensitivity: 0.15,
+    ambientDriftSpeed: 0.05,
+  },
 });

@@ -33,6 +33,12 @@ export const graphConfigSchema = z.object({
     layerStaggerMs: z.number().positive(),
     rowStaggerMs: z.number().positive(),
   }),
+  three: z.object({
+    cameraFov: z.number().positive(),
+    depthSpread: z.number().positive(),
+    tiltSensitivity: z.number().positive(),
+    ambientDriftSpeed: z.number().positive(),
+  }),
 });
 
 export type GraphConfig = z.infer<typeof graphConfigSchema>;

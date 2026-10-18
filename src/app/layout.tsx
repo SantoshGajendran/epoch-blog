@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "@/lib/theme/theme-provider";
+import { SoundProvider } from "@/lib/audio";
 import { SearchProvider } from "@/lib/search/search-provider";
 import { CommandPalette } from "@/components/palette/command-palette";
 import { Header } from "@/components/layout/header";
@@ -32,11 +33,13 @@ export default function RootLayout({
     <html lang="en" className={spaceGrotesk.variable} suppressHydrationWarning>
       <body className="font-sans antialiased bg-bg text-ink min-h-screen flex flex-col">
         <ThemeProvider>
-          <SearchProvider>
-            <Header />
-            <div className="flex-1">{children}</div>
-            <CommandPalette posts={posts} series={series} />
-          </SearchProvider>
+          <SoundProvider>
+            <SearchProvider>
+              <Header />
+              <div className="flex-1">{children}</div>
+              <CommandPalette posts={posts} series={series} />
+            </SearchProvider>
+          </SoundProvider>
         </ThemeProvider>
       </body>
     </html>

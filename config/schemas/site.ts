@@ -44,6 +44,15 @@ export const siteConfigSchema = z.object({
     searchGroupTopicsLabel: z.string().default("Topics"),
     searchGroupSeriesLabel: z.string().default("Series"),
     searchGroupActionsLabel: z.string().default("Actions"),
+    viewMode2dLabel: z.string().default("2D"),
+    viewMode3dLabel: z.string().default("3D"),
+    soundToggleAriaLabel: z.string().default("Toggle sound feedback"),
+    soundEnabledLabel: z.string().default("Sound enabled"),
+    soundDisabledLabel: z.string().default("Sound muted"),
+    diagramPreviousStepLabel: z.string().default("Previous step"),
+    diagramNextStepLabel: z.string().default("Next step"),
+    diagramStepPrefix: z.string().default("Step"),
+    diagramOfPrefix: z.string().default("of"),
   }),
 });
 
