@@ -86,6 +86,7 @@ export interface SignalState {
   speed: number;
   depth: number;
   isBackprop?: boolean;
+  stop?: boolean;
 }
 
 /**
