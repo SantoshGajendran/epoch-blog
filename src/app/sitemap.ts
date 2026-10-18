@@ -3,7 +3,7 @@ import { getAllPosts, getAllSeries } from "@/lib/content";
 import { siteConfig } from "@config/index";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getAllPosts();
+  const posts = getAllPosts({ includeDrafts: false });
   const series = getAllSeries();
 
   const staticRoutes: MetadataRoute.Sitemap = [

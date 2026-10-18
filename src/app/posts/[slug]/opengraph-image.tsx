@@ -14,7 +14,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   const post = getPostBySlug(slug);
 
   const title = post?.title || siteConfig.name;
-  const topicId = post?.topic || "agents";
+  const topicId = post?.topic || topicsConfig.topics[0]?.id || "";
   const topic = topicsConfig.topics.find((t) => t.id === topicId);
   const topicLabel = topic?.label || "Article";
   const topicColor = topic?.darkColor || "#6fd3ff";
