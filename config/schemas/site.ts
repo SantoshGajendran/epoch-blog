@@ -24,6 +24,9 @@ export const siteConfigSchema = z.object({
     readPostLabel: z.string(),
     minReadSuffix: z.string(),
     noSearchResultsLabel: z.string(),
+    themeLightLabel: z.string().default("Light"),
+    themeDarkLabel: z.string().default("Dark"),
+    searchShortcutLabel: z.string().default("Ctrl K"),
   }),
 });
 

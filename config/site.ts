@@ -23,5 +23,8 @@ export const siteConfig: SiteConfig = siteConfigSchema.parse({
     readPostLabel: "Read the post",
     minReadSuffix: "min read",
     noSearchResultsLabel: "No matches found.",
+    themeLightLabel: "Light",
+    themeDarkLabel: "Dark",
+    searchShortcutLabel: "Ctrl K",
   },
 });
