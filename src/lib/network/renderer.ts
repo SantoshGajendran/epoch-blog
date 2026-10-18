@@ -402,6 +402,9 @@ export class NetworkRenderer {
 
     const width = state.dimensions?.width ?? this.width;
     const height = state.dimensions?.height ?? this.height;
+    if (width <= 0 || height <= 0) {
+      return;
+    }
     const now =
       state.now ??
       (typeof performance !== "undefined" ? performance.now() : Date.now());
