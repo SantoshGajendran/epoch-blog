@@ -141,13 +141,13 @@ export default async function PostPage({ params }: PostPageProps) {
 
         {/* Two-Column Grid: Main Content + Sticky TOC */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mt-8">
-          <article className="lg:col-span-8 min-w-0 prose prose-slate dark:prose-invert max-w-none text-ink font-sans text-base leading-relaxed">
-            <MDXContent code={post.body} />
-          </article>
-
-          <aside className="lg:col-span-4">
+          <aside className="order-first lg:order-last lg:col-span-4">
             <TableOfContents toc={post.toc} />
           </aside>
+
+          <article className="order-last lg:order-first lg:col-span-8 min-w-0 prose prose-slate dark:prose-invert max-w-none text-ink font-sans text-base leading-relaxed">
+            <MDXContent code={post.body} />
+          </article>
         </div>
 
         {/* Bottom Series Nav */}

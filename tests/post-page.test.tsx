@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import PostPage, { generateStaticParams, generateMetadata } from "@/app/posts/[slug]/page";
 import { RelatedPosts } from "@/components/post/related-posts";
-import { getPostBySlug } from "@/lib/content";
+import { getPostBySlug, type Post } from "@/lib/content";
 import { siteConfig } from "@config/index";
 
 describe("Post Reading Page & Related Posts", () => {
@@ -73,7 +73,7 @@ describe("Post Reading Page & Related Posts", () => {
         metadata: {},
       };
 
-      const { container } = render(<RelatedPosts post={mockPost as any} />);
+      const { container } = render(<RelatedPosts post={mockPost as unknown as Post} />);
       expect(container).toBeEmptyDOMElement();
     });
   });
