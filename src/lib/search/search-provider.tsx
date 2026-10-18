@@ -44,7 +44,11 @@ export function SearchProvider({ children }: SearchProviderProps) {
   }, []);
 
   const restoreFocus = useCallback(() => {
-    if (lastFocusedElementRef.current && typeof lastFocusedElementRef.current.focus === "function") {
+    if (
+      lastFocusedElementRef.current &&
+      typeof lastFocusedElementRef.current.focus === "function" &&
+      (lastFocusedElementRef.current.isConnected ?? true)
+    ) {
       lastFocusedElementRef.current.focus();
       lastFocusedElementRef.current = null;
     }
