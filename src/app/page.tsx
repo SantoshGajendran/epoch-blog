@@ -1,17 +1,58 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { siteConfig, topicsConfig } from "@config/index";
 import { getAllPosts } from "@/lib/content";
 import { TopicChips } from "@/components/network/topic-chips";
 import { NetworkMap } from "@/components/network/network-map";
 import { PostListView } from "@/components/network/post-list-view";
+import { useOptionalSearchPalette } from "@/lib/search/search-provider";
 
 export default function Home() {
   const [activeTopicId, setActiveTopicId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
+  const [selectedPostSlug, setSelectedPostSlug] = useState<string | null>(null);
 
   const posts = useMemo(() => getAllPosts(), []);
+  const search = useOptionalSearchPalette();
+  const registerPostSelectHandler = search?.registerPostSelectHandler;
+  const registerTopicSelectHandler = search?.registerTopicSelectHandler;
+  const registerViewModeHandler = search?.registerViewModeHandler;
+
+  useEffect(() => {
+    if (
+      !registerPostSelectHandler ||
+      !registerTopicSelectHandler ||
+      !registerViewModeHandler
+    ) {
+      return;
+    }
+
+    const unregisterPost = registerPostSelectHandler((slug: string) => {
+      setSelectedPostSlug(slug);
+      setViewMode("map");
+      return true;
+    });
+
+    const unregisterTopic = registerTopicSelectHandler((topicId: string) => {
+      setActiveTopicId(topicId);
+      return true;
+    });
+
+    const unregisterViewMode = registerViewModeHandler((mode: "map" | "list") => {
+      setViewMode(mode);
+    });
+
+    return () => {
+      unregisterPost?.();
+      unregisterTopic?.();
+      unregisterViewMode?.();
+    };
+  }, [
+    registerPostSelectHandler,
+    registerTopicSelectHandler,
+    registerViewModeHandler,
+  ]);
 
   return (
     <main className="mx-auto max-w-6xl px-5 py-8 sm:py-12">
@@ -43,6 +84,8 @@ export default function Home() {
           <NetworkMap
             posts={posts}
             activeTopicId={activeTopicId}
+            selectedPostSlug={selectedPostSlug}
+            onSelectPost={setSelectedPostSlug}
           />
         ) : (
           <PostListView

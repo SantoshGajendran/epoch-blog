@@ -27,6 +27,7 @@ export function PostPreviewCard({
   return (
     <div
       role="dialog"
+      data-testid="post-preview-card"
       aria-labelledby="preview-card-title"
       className={cn(
         "absolute bottom-4 left-4 right-4 sm:left-6 sm:bottom-6 max-w-sm",

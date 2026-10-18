@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useContext } from "react";
+import { useRouter } from "next/navigation";
 import { Command } from "cmdk";
 import { Search } from "lucide-react";
-import { useSearchPalette } from "@/lib/search/search-provider";
+import { useOptionalSearchPalette } from "@/lib/search/search-provider";
+import { ThemeContext } from "@/lib/theme/use-theme";
 import { buildSearchIndex } from "@/lib/search";
 import type {
   SearchItem,
@@ -46,6 +48,15 @@ const defaultActions: SearchActionItem[] = [
   },
 ];
 
+function useSafeRouter() {
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return useRouter();
+  } catch {
+    return null;
+  }
+}
+
 export function CommandPalette({
   posts = [],
   series = [],
@@ -56,7 +67,13 @@ export function CommandPalette({
   onSelectSeries,
   onSelectAction,
 }: CommandPaletteProps) {
-  const { isOpen, close } = useSearchPalette();
+  const search = useOptionalSearchPalette();
+  const themeContext = useContext(ThemeContext);
+  const router = useSafeRouter();
+
+  const isOpen = search?.isOpen ?? false;
+  const close = search?.close ?? (() => {});
+
   const [query, setQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -118,20 +135,59 @@ export function CommandPalette({
       case "post":
         if (item.slug) {
           onSelectPost?.(item.slug);
+          const hasInterceptor = search?.hasPostSelectHandler?.() ?? false;
+          if (hasInterceptor) {
+            const result = search?.postSelectHandler?.(item.slug);
+            if (result === false && !onSelectPost && router) {
+              router.push(item.url || `/posts/${item.slug}`);
+            }
+          } else if (!onSelectPost && router) {
+            router.push(item.url || `/posts/${item.slug}`);
+          }
         }
         break;
       case "topic":
         if (item.topicId) {
           onSelectTopic?.(item.topicId);
+          const hasInterceptor = search?.hasTopicSelectHandler?.() ?? false;
+          if (hasInterceptor) {
+            const result = search?.topicSelectHandler?.(item.topicId);
+            if (result === false && !onSelectTopic && router) {
+              router.push(`/?topic=${item.topicId}`);
+            }
+          } else if (!onSelectTopic && router) {
+            router.push(`/?topic=${item.topicId}`);
+          }
         }
         break;
       case "series":
         if (item.seriesId || item.slug) {
-          onSelectSeries?.(item.seriesId || item.slug!);
+          const sId = item.seriesId || item.slug!;
+          onSelectSeries?.(sId);
+          const hasInterceptor = search?.hasSeriesSelectHandler?.() ?? false;
+          if (hasInterceptor) {
+            const result = search?.seriesSelectHandler?.(sId);
+            if (result === false && !onSelectSeries && router) {
+              router.push(`/series/${sId}`);
+            }
+          } else if (!onSelectSeries && router) {
+            router.push(`/series/${sId}`);
+          }
         }
         break;
       case "action":
         item.action?.();
+        if (item.id === "toggle-theme" || item.actionId === "toggle-theme") {
+          themeContext?.toggleTheme();
+        } else if (item.id === "switch-map" || item.actionId === "switch-map") {
+          search?.viewModeHandler?.("map");
+        } else if (
+          item.id === "switch-list" ||
+          item.actionId === "switch-list"
+        ) {
+          search?.viewModeHandler?.("list");
+        }
+        search?.actionHandler?.(item.actionId || item.id);
         if (item.actionId || item.id) {
           onSelectAction?.(item.actionId || item.id);
         }
@@ -159,7 +215,10 @@ export function CommandPalette({
       const last = focusable[focusable.length - 1];
 
       if (e.shiftKey) {
-        if (document.activeElement === first || document.activeElement === dialogEl) {
+        if (
+          document.activeElement === first ||
+          document.activeElement === dialogEl
+        ) {
           e.preventDefault();
           last.focus();
         }
