@@ -1,0 +1,23 @@
+---
+title: "Speculative Decoding and KV-Cache Paging at Scale"
+summary: "Dissecting PagedAttention memory layouts and draft-target model verification throughput on clusters of 8x H100 GPUs."
+date: "2026-03-18T13:00:00Z"
+topic: "infra"
+tags: ["vllm", "inference", "h100", "paged-attention"]
+draft: false
+---
+
+LLM autoregressive inference is memory-bandwidth bound. Speculative decoding amortizes memory transfers by accepting batches of draft tokens in parallel.
+
+<Callout type="tip" title="Draft Model Sizing">
+A draft model between 5% and 8% of target model parameter size maximizes acceptance rate without bottlenecking verification latency.
+</Callout>
+
+```bash
+# Launching high-throughput inference engine with speculative draft
+vllm serve meta-llama/Llama-3-70B-Instruct \
+  --speculative-model meta-llama/Llama-3-8B-Instruct \
+  --num-speculative-tokens 5 \
+  --gpu-memory-utilization 0.92 \
+  --tensor-parallel-size 4
+```

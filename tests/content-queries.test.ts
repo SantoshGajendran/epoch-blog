@@ -139,7 +139,7 @@ describe("Content Query Logic", () => {
       permalink: "/posts/sample",
       summary: "Sample",
       date: "2026-03-01T00:00:00Z",
-      topic: "agents",
+      topic: "non-existent-topic",
       tags: [] as string[],
       draft: false,
       readingTime: 1,

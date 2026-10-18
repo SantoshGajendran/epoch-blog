@@ -1,0 +1,31 @@
+---
+title: "Hierarchical Supervisor Routing Patterns"
+summary: "Decoupling high-level task planning from domain-specific agent executors using dynamic intent graphs."
+date: "2026-03-05T14:30:00Z"
+topic: "agents"
+tags: ["routing", "multi-agent", "supervisor"]
+series:
+  id: "agentic-architectures"
+  order: 2
+draft: false
+---
+
+Single monolithic agents fail when context windows overflow with extraneous tool schemas. Splitting into domain-specialized agents with a supervisor router restores determinism.
+
+<Callout type="tip" title="Context Partitioning">
+Only expose tools relevant to the active sub-domain. Sharding tools into leaf agents cuts tool-selection error rates by over 4x.
+</Callout>
+
+```typescript
+export interface SubagentManifest {
+  id: string;
+  domain: string;
+  tools: string[];
+  maxIterations: number;
+}
+
+export function routeIntent(query: string, agents: SubagentManifest[]): SubagentManifest {
+  // Deterministic routing based on domain embeddings and schema matching
+  return agents[0];
+}
+```

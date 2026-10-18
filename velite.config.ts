@@ -33,7 +33,8 @@ export const posts = defineCollection({
       body: s.mdx(),
     })
     .transform((data, { meta }) => {
-      const slug = meta.path.replace(/^posts\//, "").replace(/\.mdx$/, "");
+      const normalizedPath = meta.path.replace(/\\/g, "/");
+      const slug = normalizedPath.replace(/^(.*\/)?posts\//, "").replace(/\.mdx$/, "");
       const wordCount = meta.content?.split(/\s+/).length || 0;
       const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
@@ -58,7 +59,8 @@ export const series = defineCollection({
       body: s.mdx(),
     })
     .transform((data, { meta }) => {
-      const slug = meta.path.replace(/^series\//, "").replace(/\.mdx$/, "");
+      const normalizedPath = meta.path.replace(/\\/g, "/");
+      const slug = normalizedPath.replace(/^(.*\/)?series\//, "").replace(/\.mdx$/, "");
       return {
         ...data,
         slug,

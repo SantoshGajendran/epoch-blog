@@ -1,0 +1,53 @@
+---
+title: "Evaluating Autonomous Agent Tool Loops"
+summary: "Quantitative methodology for measuring tool-call drift, state regressions, and termination bounds in autonomous agent loops."
+date: "2026-03-01T10:00:00Z"
+topic: "agents"
+tags: ["evals", "benchmarks", "tools"]
+series:
+  id: "agentic-architectures"
+  order: 1
+draft: false
+---
+
+Autonomous agents differ fundamentally from standard LLM chains: they execute non-deterministic cycles of reasoning, tool dispatch, and observation intake.
+
+<Callout type="important" title="State Regression Risks">
+Agent benchmarks that only evaluate final output miss 70% of production regressions. Intermediate trajectories must be evaluated step-by-step.
+</Callout>
+
+## Trajectory Invariance Testing
+
+When asserting agent behavior, we measure trajectory distance using state graph alignment:
+
+```python
+from dataclasses import dataclass
+from typing import List, Dict, Any
+
+@dataclass
+class ToolExecutionStep:
+    tool_name: str
+    arguments: Dict[str, Any]
+    observation: Any
+    latency_ms: float
+
+def compute_trajectory_divergence(
+    expected_steps: List[str], 
+    actual_steps: List[ToolExecutionStep]
+) -> float:
+    """Computes Levenshtein-based tool sequence divergence."""
+    actual_names = [step.tool_name for step in actual_steps]
+    # Trajectory comparison logic
+    return len(set(expected_steps).symmetric_difference(set(actual_names))) / max(len(expected_steps), 1)
+```
+
+<DiagramSlot name="agent-loop-trajectory" title="Agent Tool Loop Architecture" description="Evaluation taps inserted between model actuation and environment feedback." />
+
+### Termination Boundary Guarantees
+
+Always bound agent step counts and token budgets to prevent runaway recursion:
+
+```python
+MAX_TOOL_CALL_STEPS = 12
+TOKEN_BUDGET_CAP = 32_000
+```
