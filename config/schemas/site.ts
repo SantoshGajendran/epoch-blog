@@ -27,6 +27,16 @@ export const siteConfigSchema = z.object({
     themeLightLabel: z.string().default("Light"),
     themeDarkLabel: z.string().default("Dark"),
     searchShortcutLabel: z.string().default("Ctrl K"),
+    keyTakeawaysTitle: z.string().default("Key takeaways"),
+    tableOfContentsTitle: z.string().default("On this page"),
+    seriesPartPrefix: z.string().default("Part"),
+    seriesOfPrefix: z.string().default("of"),
+    previousPostLabel: z.string().default("Previous"),
+    nextPostLabel: z.string().default("Next"),
+    relatedPostsTitle: z.string().default("Related explorations"),
+    sharePostLabel: z.string().default("Share"),
+    linkCopiedLabel: z.string().default("Link copied"),
+    backToMapLabel: z.string().default("Back to map"),
   }),
 });
 

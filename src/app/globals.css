@@ -91,3 +91,22 @@ body {
   outline: 2px solid var(--a);
   outline-offset: 2px;
 }
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+/* Shiki Dual-Theme Token Styles */
+html[data-theme="dark"] pre [style*="--shiki-dark"] {
+  color: var(--shiki-dark) !important;
+}
+html[data-theme="dark"] pre [style*="--shiki-dark-bg"] {
+  background-color: transparent !important;
+}
+html[data-theme="light"] pre [style*="--shiki-light"] {
+  color: var(--shiki-light) !important;
+}
+html[data-theme="light"] pre [style*="--shiki-light-bg"] {
+  background-color: transparent !important;
+}
