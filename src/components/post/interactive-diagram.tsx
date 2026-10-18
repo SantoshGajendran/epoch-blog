@@ -67,15 +67,13 @@ export function InteractiveDiagram({
   const detailsCardRef = React.useRef<HTMLDivElement>(null);
   const sound = useOptionalSound();
 
-  if (!steps || steps.length === 0) {
-    return null;
-  }
-
-  const activeStep = steps[currentStep] || steps[0];
+  const stepsCount = steps?.length ?? 0;
+  const activeStep = stepsCount > 0 ? steps[currentStep] || steps[0] : null;
 
   const goToStep = React.useCallback(
     (index: number) => {
-      const clamped = Math.max(0, Math.min(index, steps.length - 1));
+      if (stepsCount === 0) return;
+      const clamped = Math.max(0, Math.min(index, stepsCount - 1));
       if (clamped === currentStep) return;
 
       setCurrentStep(clamped);
@@ -83,14 +81,14 @@ export function InteractiveDiagram({
         sound.playSound("tick");
       }
     },
-    [currentStep, steps.length, sound]
+    [currentStep, stepsCount, sound]
   );
 
   const handleNext = React.useCallback(() => {
-    if (currentStep < steps.length - 1) {
+    if (currentStep < stepsCount - 1) {
       goToStep(currentStep + 1);
     }
-  }, [currentStep, steps.length, goToStep]);
+  }, [currentStep, stepsCount, goToStep]);
 
   const handlePrev = React.useCallback(() => {
     if (currentStep > 0) {
@@ -135,6 +133,10 @@ export function InteractiveDiagram({
       gsap.killTweensOf(card);
     };
   }, [currentStep]);
+
+  if (!steps || steps.length === 0 || !activeStep) {
+    return null;
+  }
 
   const ariaRegionLabel = title || siteConfig.ui.diagramHeaderLabel || "Interactive diagram";
 

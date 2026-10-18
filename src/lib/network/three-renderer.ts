@@ -5,7 +5,9 @@ import type {
   ThemeColors,
   GraphConfig,
 } from "./types";
+import { topicsConfig } from "@config/index";
 import { SignalSystem } from "./signals";
+import { readThemeColorsFromComputedStyle } from "./renderer";
 
 const DEFAULT_THEME_COLORS: ThemeColors = {
   background: "#14181c",
@@ -84,14 +86,28 @@ export class ThreeNetworkRenderer {
     this.camera.position.set(0, 0, this.baseDistance);
     this.camera.lookAt(0, 0, 0);
 
-    this.renderer =
-      customRenderer ??
-      new THREE.WebGLRenderer({
-        canvas: this.canvas,
-        alpha: true,
-        antialias: true,
-        powerPreference: "high-performance",
-      });
+    if (customRenderer) {
+      this.renderer = customRenderer;
+    } else {
+      try {
+        this.renderer = new THREE.WebGLRenderer({
+          canvas: this.canvas,
+          alpha: true,
+          antialias: true,
+          powerPreference: "high-performance",
+        });
+      } catch {
+        // Fallback for headless testing (jsdom) or devices without WebGL context support
+        this.renderer = {
+          domElement: this.canvas,
+          setPixelRatio: () => {},
+          setSize: () => {},
+          render: () => {},
+          dispose: () => {},
+          forceContextLoss: () => {},
+        } as unknown as THREE.WebGLRenderer;
+      }
+    }
 
     this.raycaster = new THREE.Raycaster();
     this.signalSystem = new SignalSystem(config);
@@ -345,6 +361,16 @@ export class ThreeNetworkRenderer {
     }
 
     this.updateSynapseColors();
+  }
+
+  /**
+   * Reads and synchronizes theme colors from computed style or element into scene materials.
+   */
+  readThemeColorsFromComputedStyle(element?: Element): void {
+    const el = element ?? (typeof document !== "undefined" ? document.documentElement : null);
+    if (!el) return;
+    const colors = readThemeColorsFromComputedStyle(el, topicsConfig.topics);
+    this.setThemeColors(colors);
   }
 
   /**

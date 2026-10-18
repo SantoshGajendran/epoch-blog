@@ -9,6 +9,8 @@ export interface TopicChipsProps {
   onSelectTopic: (id: string | null) => void;
   viewMode: "map" | "list";
   onViewModeChange: (mode: "map" | "list") => void;
+  dimensionMode?: "2d" | "3d";
+  onDimensionModeChange?: (mode: "2d" | "3d") => void;
   className?: string;
 }
 
@@ -22,6 +24,8 @@ export function TopicChips({
   onSelectTopic,
   viewMode,
   onViewModeChange,
+  dimensionMode = "2d",
+  onDimensionModeChange,
   className,
 }: TopicChipsProps) {
   return (
@@ -73,40 +77,80 @@ export function TopicChips({
         );
       })}
 
-      {/* Segmented control Map / List toggle */}
-      <div
-        role="group"
-        aria-label="View mode"
-        className="flex items-center border border-line rounded-xl overflow-hidden bg-surf ml-auto max-sm:w-full max-sm:justify-between max-sm:mt-2"
-      >
-        <button
-          type="button"
-          aria-pressed={viewMode === "map"}
-          onClick={() => onViewModeChange("map")}
-          className={cn(
-            "flex-1 sm:flex-none px-3.5 py-1.5 text-sm transition-colors text-center",
-            "focus:outline-none focus:ring-2 focus:ring-lime focus:ring-inset",
-            viewMode === "map"
-              ? "bg-lime text-limeink font-medium"
-              : "text-mut hover:text-ink hover:bg-line/20"
-          )}
+      <div className="flex items-center gap-2 ml-auto max-sm:w-full max-sm:justify-between max-sm:mt-2">
+        {/* Segmented control 2D / 3D toggle (visible only in map view on desktop/tablet) */}
+        {viewMode === "map" && onDimensionModeChange && (
+          <div
+            role="group"
+            aria-label="Dimension mode"
+            className="hidden md:inline-flex items-center border border-line rounded-xl overflow-hidden bg-surf"
+          >
+            <button
+              type="button"
+              aria-pressed={dimensionMode === "2d"}
+              onClick={() => onDimensionModeChange("2d")}
+              className={cn(
+                "px-3.5 py-1.5 text-sm transition-colors text-center",
+                "focus:outline-none focus:ring-2 focus:ring-lime focus:ring-inset",
+                dimensionMode === "2d"
+                  ? "bg-lime text-limeink font-medium"
+                  : "text-mut hover:text-ink hover:bg-line/20"
+              )}
+            >
+              {siteConfig.ui.viewMode2dLabel}
+            </button>
+            <button
+              type="button"
+              aria-pressed={dimensionMode === "3d"}
+              onClick={() => onDimensionModeChange("3d")}
+              className={cn(
+                "px-3.5 py-1.5 text-sm transition-colors text-center",
+                "focus:outline-none focus:ring-2 focus:ring-lime focus:ring-inset",
+                dimensionMode === "3d"
+                  ? "bg-lime text-limeink font-medium"
+                  : "text-mut hover:text-ink hover:bg-line/20"
+              )}
+            >
+              {siteConfig.ui.viewMode3dLabel}
+            </button>
+          </div>
+        )}
+
+        {/* Segmented control Map / List toggle */}
+        <div
+          role="group"
+          aria-label="View mode"
+          className="flex items-center border border-line rounded-xl overflow-hidden bg-surf max-sm:w-full max-sm:justify-between"
         >
-          {siteConfig.ui.mapViewLabel}
-        </button>
-        <button
-          type="button"
-          aria-pressed={viewMode === "list"}
-          onClick={() => onViewModeChange("list")}
-          className={cn(
-            "flex-1 sm:flex-none px-3.5 py-1.5 text-sm transition-colors text-center",
-            "focus:outline-none focus:ring-2 focus:ring-lime focus:ring-inset",
-            viewMode === "list"
-              ? "bg-lime text-limeink font-medium"
-              : "text-mut hover:text-ink hover:bg-line/20"
-          )}
-        >
-          {siteConfig.ui.listViewLabel}
-        </button>
+          <button
+            type="button"
+            aria-pressed={viewMode === "map"}
+            onClick={() => onViewModeChange("map")}
+            className={cn(
+              "flex-1 sm:flex-none px-3.5 py-1.5 text-sm transition-colors text-center",
+              "focus:outline-none focus:ring-2 focus:ring-lime focus:ring-inset",
+              viewMode === "map"
+                ? "bg-lime text-limeink font-medium"
+                : "text-mut hover:text-ink hover:bg-line/20"
+            )}
+          >
+            {siteConfig.ui.mapViewLabel}
+          </button>
+          <button
+            type="button"
+            aria-pressed={viewMode === "list"}
+            onClick={() => onViewModeChange("list")}
+            className={cn(
+              "flex-1 sm:flex-none px-3.5 py-1.5 text-sm transition-colors text-center",
+              "focus:outline-none focus:ring-2 focus:ring-lime focus:ring-inset",
+              viewMode === "list"
+                ? "bg-lime text-limeink font-medium"
+                : "text-mut hover:text-ink hover:bg-line/20"
+            )}
+          >
+            {siteConfig.ui.listViewLabel}
+          </button>
+        </div>
       </div>
     </div>
   );
