@@ -36,5 +36,12 @@ export const siteConfig: SiteConfig = siteConfigSchema.parse({
     sharePostLabel: "Share",
     linkCopiedLabel: "Link copied",
     backToMapLabel: "Back to map",
+    actionSwitchThemeLabel: "Toggle theme",
+    actionShowMapLabel: "Switch to map view",
+    actionShowListLabel: "Switch to list view",
+    searchGroupPostsLabel: "Posts",
+    searchGroupTopicsLabel: "Topics",
+    searchGroupSeriesLabel: "Series",
+    searchGroupActionsLabel: "Actions",
   },
 });

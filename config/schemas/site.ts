@@ -37,6 +37,13 @@ export const siteConfigSchema = z.object({
     sharePostLabel: z.string().default("Share"),
     linkCopiedLabel: z.string().default("Link copied"),
     backToMapLabel: z.string().default("Back to map"),
+    actionSwitchThemeLabel: z.string().default("Toggle theme"),
+    actionShowMapLabel: z.string().default("Switch to map view"),
+    actionShowListLabel: z.string().default("Switch to list view"),
+    searchGroupPostsLabel: z.string().default("Posts"),
+    searchGroupTopicsLabel: z.string().default("Topics"),
+    searchGroupSeriesLabel: z.string().default("Series"),
+    searchGroupActionsLabel: z.string().default("Actions"),
   }),
 });
 
