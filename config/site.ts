@@ -1,0 +1,27 @@
+import { siteConfigSchema, type SiteConfig } from "./schemas/site";
+
+export const siteConfig: SiteConfig = siteConfigSchema.parse({
+  name: "Epoch",
+  tagline: "One more pass at understanding AI.",
+  description: "Build logs, deep dives, and architectural patterns on autonomous agents, retrieval, fine-tuning, and scalable inference infrastructure.",
+  url: "https://epoch.dev",
+  author: {
+    name: "AI Engineer",
+    bio: "Passionate about autonomous systems and applied AI.",
+    github: "https://github.com",
+    twitter: "https://twitter.com",
+  },
+  ui: {
+    searchPlaceholder: "Search posts, topics, actions",
+    searchButtonLabel: "Search",
+    searchAriaLabel: "Open search dialog",
+    themeToggleAriaLabel: "Toggle light and dark theme",
+    allTopicsLabel: "All topics",
+    mapViewLabel: "Map",
+    listViewLabel: "List",
+    prototypeHint: "Press Ctrl K (or Cmd K) to search.",
+    readPostLabel: "Read the post",
+    minReadSuffix: "min read",
+    noSearchResultsLabel: "No matches found.",
+  },
+});
