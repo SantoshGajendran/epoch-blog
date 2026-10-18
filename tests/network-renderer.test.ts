@@ -432,19 +432,15 @@ describe("NetworkRenderer", () => {
     });
 
     it("renders smoothly within 16ms frame budget (60fps) with 50+ posts", () => {
-      const largePosts: Post[] = Array.from({ length: 60 }, (_, i) => ({
-        title: `Post ${i}`,
-        slug: `post-${i}`,
-        permalink: `/posts/post-${i}`,
-        summary: `Summary for post ${i}`,
-        date: "2026-03-01T00:00:00.000Z",
-        topic: topicsConfig.topics[i % topicsConfig.topics.length].id,
-        tags: ["ai"],
-        readingTime: 5,
-        toc: [],
-        body: "",
-        metadata: {},
-      }));
+      const largePosts: Post[] = Array.from({ length: 60 }, (_, i) =>
+        createMockPost({
+          title: `Post ${i}`,
+          slug: `post-${i}`,
+          topic: topicsConfig.topics[i % topicsConfig.topics.length].id,
+          tags: ["ai"],
+          readingTime: 5,
+        })
+      );
 
       const largeGraph = buildNetworkGraph(topicsConfig.topics, graphConfig, largePosts);
       const start = performance.now();

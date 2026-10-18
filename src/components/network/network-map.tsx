@@ -46,7 +46,7 @@ export function NetworkMap({
   onSelectPost,
   activeTopicId,
   className,
-  ariaLabel = "Interactive Neural Network Map",
+  ariaLabel = "Interactive neural network map",
 }: NetworkMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
