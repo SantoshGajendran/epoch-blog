@@ -13,6 +13,7 @@ describe("Layout Components", () => {
   beforeEach(() => {
     localStorage.clear();
     document.documentElement.removeAttribute("data-theme");
+    HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(null);
     window.matchMedia = vi.fn().mockImplementation((query: string) => ({
       matches: query.includes("dark"),
       media: query,
