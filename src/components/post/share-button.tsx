@@ -15,6 +15,15 @@ interface ShareButtonProps {
 
 export function ShareButton({ title, text, url, className }: ShareButtonProps) {
   const [copied, setCopied] = React.useState(false);
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleShare = async () => {
     const shareUrl = url || (typeof window !== "undefined" ? window.location.href : "");
@@ -37,7 +46,13 @@ export function ShareButton({ title, text, url, className }: ShareButtonProps) {
       if (typeof navigator !== "undefined" && navigator.clipboard) {
         await navigator.clipboard.writeText(shareUrl);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+          setCopied(false);
+          timeoutRef.current = null;
+        }, 2000);
       }
     } catch {
       // Ignore clipboard error

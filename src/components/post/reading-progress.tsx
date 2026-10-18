@@ -6,19 +6,25 @@ import { cn } from "@/lib/utils";
 interface ReadingProgressProps {
   className?: string;
   targetRef?: React.RefObject<HTMLElement | null>;
+  "aria-label"?: string;
 }
 
-export function ReadingProgress({ className, targetRef }: ReadingProgressProps) {
+export function ReadingProgress({
+  className,
+  targetRef,
+  "aria-label": ariaLabel = "Reading progress",
+}: ReadingProgressProps) {
   const [progress, setProgress] = React.useState(0);
 
   React.useEffect(() => {
     const handleScroll = () => {
       if (targetRef?.current) {
         const element = targetRef.current;
-        const elementTop = typeof element.offsetTop === "number" && !isNaN(element.offsetTop)
-          ? element.offsetTop
-          : element.getBoundingClientRect().top + window.scrollY;
-        const elementHeight = element.offsetHeight || 0;
+        const rect = element.getBoundingClientRect();
+        const elementTop = rect.top !== 0 || rect.height !== 0
+          ? rect.top + window.scrollY
+          : (element.offsetTop ?? 0);
+        const elementHeight = rect.height || element.offsetHeight || 0;
         const windowHeight = window.innerHeight;
         const totalScrollable = elementHeight - windowHeight;
 
@@ -44,15 +50,19 @@ export function ReadingProgress({ className, targetRef }: ReadingProgressProps) 
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
     handleScroll();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, [targetRef]);
 
   return (
     <div
       role="progressbar"
-      aria-label="Reading progress"
+      aria-label={ariaLabel}
       aria-valuenow={progress}
       aria-valuemin={0}
       aria-valuemax={100}
