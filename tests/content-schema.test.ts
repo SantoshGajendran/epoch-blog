@@ -18,6 +18,24 @@ describe("Content Schema Constraints", () => {
     expect(validateTopic("quantum-cryptography")).toBe(false);
   });
 
+  it("fails loudly when topic schema encounters an unknown topic", async () => {
+    const { z } = await import("zod");
+    const validTopicIds = new Set(topicsConfig.topics.map((t) => t.id));
+    const topicSchema = z.string().refine((val) => validTopicIds.has(val), {
+      message: `Topic must be one of: ${Array.from(validTopicIds).join(", ")}`,
+    });
+
+    const result = topicSchema.safeParse("invalid-domain-topic");
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.errors[0].message).toContain("Topic must be one of:");
+      expect(result.error.errors[0].message).toContain("agents");
+      expect(result.error.errors[0].message).toContain("rag");
+      expect(result.error.errors[0].message).toContain("tune");
+      expect(result.error.errors[0].message).toContain("infra");
+    }
+  });
+
   it("calculates reading time correctly based on 200 words per minute", () => {
     const calculateReadingTime = (wordCount: number) => Math.max(1, Math.ceil(wordCount / 200));
 

@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "velite dev & next dev",
-    "build": "velite build && next build",
+    "build": "velite build --strict && next build",
     "start": "next start",
-    "velite": "velite build",
+    "velite": "velite build --strict",
     "typecheck": "tsc --noEmit",
     "lint": "next lint",
     "test": "vitest run"

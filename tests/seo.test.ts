@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { generateRssXml, GET } from "@/app/rss.xml/route";
+import { GET } from "@/app/rss.xml/route";
+import { generateRssXml } from "@/lib/content/rss";
 import sitemap from "@/app/sitemap";
 import Image, { size, contentType } from "@/app/posts/[slug]/opengraph-image";
 import { siteConfig } from "@config/index";

@@ -71,6 +71,7 @@ export const series = defineCollection({
 
 export default defineConfig({
   root: "content",
+  strict: true,
   output: {
     data: ".velite",
     assets: "public/static",
