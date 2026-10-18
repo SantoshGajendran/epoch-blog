@@ -430,6 +430,36 @@ describe("NetworkRenderer", () => {
       expect(mockCtx.arc).toHaveBeenCalled();
       expect(mockCtx.stroke).toHaveBeenCalled();
     });
+
+    it("renders smoothly within 16ms frame budget (60fps) with 50+ posts", () => {
+      const largePosts: Post[] = Array.from({ length: 60 }, (_, i) => ({
+        title: `Post ${i}`,
+        slug: `post-${i}`,
+        permalink: `/posts/post-${i}`,
+        summary: `Summary for post ${i}`,
+        date: "2026-03-01T00:00:00.000Z",
+        topic: topicsConfig.topics[i % topicsConfig.topics.length].id,
+        tags: ["ai"],
+        readingTime: 5,
+        toc: [],
+        body: "",
+        metadata: {},
+      }));
+
+      const largeGraph = buildNetworkGraph(topicsConfig.topics, graphConfig, largePosts);
+      const start = performance.now();
+      for (let frame = 0; frame < 10; frame++) {
+        renderer.render({
+          graph: largeGraph,
+          selectedNeuron: largeGraph.postNeurons[0],
+          isReducedMotion: false,
+          dimensions: { width: 1200, height: 800 },
+          now: 1000 + frame * 16,
+        });
+      }
+      const avgElapsedMs = (performance.now() - start) / 10;
+      expect(avgElapsedMs).toBeLessThan(16);
+    });
   });
 
   describe("Color utility helper", () => {
