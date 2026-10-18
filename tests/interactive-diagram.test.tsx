@@ -91,6 +91,11 @@ describe("InteractiveDiagram Component", () => {
       ).toBeInTheDocument();
       expect(screen.getByRole("heading", { name: "Custom Alpha" })).toBeInTheDocument();
     });
+
+    it("returns null when empty steps array is passed", () => {
+      const { container } = render(<InteractiveDiagram steps={[]} />);
+      expect(container.firstChild).toBeNull();
+    });
   });
 
   describe("Step Navigation & Controls", () => {

@@ -67,6 +67,10 @@ export function InteractiveDiagram({
   const detailsCardRef = React.useRef<HTMLDivElement>(null);
   const sound = useOptionalSound();
 
+  if (!steps || steps.length === 0) {
+    return null;
+  }
+
   const activeStep = steps[currentStep] || steps[0];
 
   const goToStep = React.useCallback(
@@ -108,7 +112,8 @@ export function InteractiveDiagram({
   );
 
   React.useEffect(() => {
-    if (!detailsCardRef.current) return;
+    const card = detailsCardRef.current;
+    if (!card) return;
 
     const prefersReducedMotion =
       typeof window !== "undefined" &&
@@ -116,15 +121,19 @@ export function InteractiveDiagram({
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (prefersReducedMotion) {
-      gsap.set(detailsCardRef.current, { opacity: 1, y: 0 });
+      gsap.set(card, { opacity: 1, y: 0 });
       return;
     }
 
     gsap.fromTo(
-      detailsCardRef.current,
+      card,
       { opacity: 0, y: 8 },
       { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }
     );
+
+    return () => {
+      gsap.killTweensOf(card);
+    };
   }, [currentStep]);
 
   const ariaRegionLabel = title || siteConfig.ui.diagramHeaderLabel || "Interactive diagram";
