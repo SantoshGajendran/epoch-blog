@@ -53,6 +53,7 @@ export const siteConfigSchema = z.object({
     diagramNextStepLabel: z.string().default("Next step"),
     diagramStepPrefix: z.string().default("Step"),
     diagramOfPrefix: z.string().default("of"),
+    diagramHeaderLabel: z.string().default("Interactive diagram"),
   }),
 });
 

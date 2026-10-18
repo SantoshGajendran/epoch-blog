@@ -51,6 +51,7 @@ describe("Immersion Configuration Extensions", () => {
       expect(siteConfig.ui.diagramNextStepLabel).toBe("Next step");
       expect(siteConfig.ui.diagramStepPrefix).toBe("Step");
       expect(siteConfig.ui.diagramOfPrefix).toBe("of");
+      expect(siteConfig.ui.diagramHeaderLabel).toBe("Interactive diagram");
     });
 
     it("applies defaults in siteConfigSchema when immersion labels are omitted", () => {
@@ -88,6 +89,7 @@ describe("Immersion Configuration Extensions", () => {
       expect(parsed.ui.diagramNextStepLabel).toBe("Next step");
       expect(parsed.ui.diagramStepPrefix).toBe("Step");
       expect(parsed.ui.diagramOfPrefix).toBe("of");
+      expect(parsed.ui.diagramHeaderLabel).toBe("Interactive diagram");
     });
   });
 });

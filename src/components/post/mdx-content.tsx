@@ -4,12 +4,14 @@ import { Callout } from "./callout";
 import { CodeBlock } from "./code-block";
 import { Figure } from "./figure";
 import { DiagramSlot } from "./diagram-slot";
+import { InteractiveDiagram } from "./interactive-diagram";
 
 const sharedComponents = {
   Callout,
   pre: CodeBlock,
   Figure,
   DiagramSlot,
+  InteractiveDiagram,
 };
 
 type MDXComponent = React.ComponentType<{ components?: Record<string, React.ElementType> }>;

@@ -52,5 +52,6 @@ export const siteConfig: SiteConfig = siteConfigSchema.parse({
     diagramNextStepLabel: "Next step",
     diagramStepPrefix: "Step",
     diagramOfPrefix: "of",
+    diagramHeaderLabel: "Interactive diagram",
   },
 });
