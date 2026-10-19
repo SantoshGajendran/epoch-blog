@@ -9,6 +9,7 @@ import { NetworkMap } from "@/components/network/network-map";
 import { PostListView } from "@/components/network/post-list-view";
 import { useOptionalSearchPalette } from "@/lib/search/search-provider";
 import { useOptionalSound } from "@/lib/audio";
+import { CyberBackground } from "@/components/ambient/cyber-background";
 
 const NetworkMap3D = dynamic(
   () =>
@@ -102,61 +103,64 @@ export default function Home() {
   ]);
 
   return (
-    <main className="mx-auto max-w-6xl px-5 py-8 sm:py-12">
-      {/* Hero section */}
-      <section className="max-w-3xl py-4 sm:py-6">
-        <span className="text-xs font-mono font-medium text-primary tracking-widest uppercase mb-2 inline-block">
-          {siteConfig.name}
-        </span>
-        <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-ink leading-[1.05]">
-          {siteConfig.tagline}
-        </h1>
-        <p className="mt-4 text-base sm:text-lg text-mut leading-relaxed">
-          {siteConfig.description}
-        </p>
-      </section>
+    <>
+      <CyberBackground />
+      <main className="mx-auto max-w-6xl px-5 py-8 sm:py-12">
+        {/* Hero section */}
+        <section className="max-w-3xl py-4 sm:py-6">
+          <span className="text-xs font-mono font-medium text-primary tracking-widest uppercase mb-2 inline-block">
+            {siteConfig.name}
+          </span>
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-ink leading-[1.05]">
+            {siteConfig.tagline}
+          </h1>
+          <p className="mt-4 text-base sm:text-lg text-mut leading-relaxed">
+            {siteConfig.description}
+          </p>
+        </section>
 
-      {/* Interactive controls: Topic pills, 2D/3D toggle & Map/List segmented switch */}
-      <TopicChips
-        topics={topicsConfig.topics}
-        activeTopicId={activeTopicId}
-        onSelectTopic={setActiveTopicId}
-        viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        dimensionMode={dimensionMode}
-        onDimensionModeChange={setDimensionMode}
-      />
+        {/* Interactive controls: Topic pills, 2D/3D toggle & Map/List segmented switch */}
+        <TopicChips
+          topics={topicsConfig.topics}
+          activeTopicId={activeTopicId}
+          onSelectTopic={setActiveTopicId}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
+          dimensionMode={dimensionMode}
+          onDimensionModeChange={setDimensionMode}
+        />
 
-      {/* Main stage: Neural Network Map (2D or 3D) or Accessible List View */}
-      <section aria-label="Posts showcase" className="mt-4">
-        {viewMode === "map" ? (
-          dimensionMode === "3d" ? (
-            <NetworkMap3D
-              posts={posts}
-              activeTopicId={activeTopicId}
-              selectedPostSlug={selectedPostSlug}
-              onSelectPost={handleSelectPost}
-            />
+        {/* Main stage: Neural Network Map (2D or 3D) or Accessible List View */}
+        <section aria-label="Posts showcase" className="mt-4">
+          {viewMode === "map" ? (
+            dimensionMode === "3d" ? (
+              <NetworkMap3D
+                posts={posts}
+                activeTopicId={activeTopicId}
+                selectedPostSlug={selectedPostSlug}
+                onSelectPost={handleSelectPost}
+              />
+            ) : (
+              <NetworkMap
+                posts={posts}
+                activeTopicId={activeTopicId}
+                selectedPostSlug={selectedPostSlug}
+                onSelectPost={handleSelectPost}
+              />
+            )
           ) : (
-            <NetworkMap
+            <PostListView
               posts={posts}
               activeTopicId={activeTopicId}
-              selectedPostSlug={selectedPostSlug}
-              onSelectPost={handleSelectPost}
             />
-          )
-        ) : (
-          <PostListView
-            posts={posts}
-            activeTopicId={activeTopicId}
-          />
-        )}
-      </section>
+          )}
+        </section>
 
-      {/* Prototype search shortcut hint */}
-      <p className="mt-4 text-xs sm:text-sm text-mut">
-        {siteConfig.ui.prototypeHint}
-      </p>
-    </main>
+        {/* Prototype search shortcut hint */}
+        <p className="mt-4 text-xs sm:text-sm text-mut">
+          {siteConfig.ui.prototypeHint}
+        </p>
+      </main>
+    </>
   );
 }
