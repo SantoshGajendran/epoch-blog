@@ -2,9 +2,11 @@
 
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
-import { siteConfig, topicsConfig } from "@config/index";
+import { siteConfig, topicsConfig, graphConfig } from "@config/index";
 import { getAllPosts } from "@/lib/content";
+import { buildNetworkGraph } from "@/lib/network";
 import { TopicChips } from "@/components/network/topic-chips";
+import { TelemetryBar } from "@/components/network/telemetry-bar";
 import { NetworkMap } from "@/components/network/network-map";
 import { PostListView } from "@/components/network/post-list-view";
 import { useOptionalSearchPalette } from "@/lib/search/search-provider";
@@ -29,6 +31,10 @@ export default function Home() {
   const [selectedPostSlug, setSelectedPostSlug] = useState<string | null>(null);
 
   const posts = useMemo(() => getAllPosts(), []);
+  const graph = useMemo(
+    () => buildNetworkGraph(topicsConfig.topics, graphConfig, posts),
+    [posts]
+  );
   const search = useOptionalSearchPalette();
   const sound = useOptionalSound();
   const registerPostSelectHandler = search?.registerPostSelectHandler;
@@ -128,6 +134,14 @@ export default function Home() {
           onViewModeChange={setViewMode}
           dimensionMode={dimensionMode}
           onDimensionModeChange={setDimensionMode}
+        />
+
+        {/* Live Cybernetic Telemetry HUD */}
+        <TelemetryBar
+          totalNeurons={graph.neurons.length}
+          postNeurons={graph.postNeurons.length}
+          dimensionMode={dimensionMode}
+          className="mt-4"
         />
 
         {/* Main stage: Neural Network Map (2D or 3D) or Accessible List View */}
