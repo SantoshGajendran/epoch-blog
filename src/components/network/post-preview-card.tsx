@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { siteConfig, topicsConfig } from "@config/index";
 import { cn } from "@/lib/utils";
 import type { Post } from "@/lib/content";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 export interface PostPreviewCardProps {
   post: Post;
@@ -25,14 +26,14 @@ export function PostPreviewCard({
   const topicColorVar = topic?.colorToken ? `var(${topic.colorToken})` : "var(--a)";
 
   return (
-    <div
+    <SpotlightCard
       role="dialog"
       data-testid="post-preview-card"
       aria-labelledby="preview-card-title"
       className={cn(
         "absolute bottom-4 left-4 right-4 sm:left-6 sm:bottom-6 max-w-sm",
         "bg-surf/90 backdrop-blur-md border border-line rounded-xl p-4 shadow-xl z-20",
-        "transition-all duration-200 animate-in fade-in slide-in-from-bottom-2",
+        "animate-in fade-in slide-in-from-bottom-2",
         className
       )}
     >
@@ -40,7 +41,7 @@ export function PostPreviewCard({
         type="button"
         onClick={onClose}
         aria-label="Close post preview"
-        className="absolute top-3 right-3 p-1 rounded-md text-mut hover:text-ink hover:bg-line/40 transition-colors focus:outline-none focus:ring-2 focus:ring-lime"
+        className="absolute top-3 right-3 p-1 rounded-md text-mut hover:text-ink hover:bg-line/40 transition-colors focus:outline-none focus:ring-2 focus:ring-lime z-10"
       >
         <X className="w-4 h-4" aria-hidden="true" />
       </button>
@@ -84,6 +85,6 @@ export function PostPreviewCard({
           {siteConfig.ui.readPostLabel}
         </Link>
       </div>
-    </div>
+    </SpotlightCard>
   );
 }

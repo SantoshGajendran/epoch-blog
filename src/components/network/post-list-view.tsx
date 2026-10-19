@@ -3,6 +3,7 @@ import Link from "next/link";
 import { siteConfig, topicsConfig } from "@config/index";
 import type { Post } from "@/lib/content";
 import { cn } from "@/lib/utils";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 export interface PostListViewProps {
   posts: Post[];
@@ -54,14 +55,18 @@ export function PostListView({
 
         return (
           <li key={post.slug} className="m-0 p-0">
-            <Link
-              href={post.permalink}
-              className={cn(
-                "group flex flex-col sm:grid sm:grid-cols-[auto_1fr_auto] gap-3 sm:gap-5 items-start sm:items-center",
-                "p-4 sm:px-6 sm:py-5 transition-colors hover:bg-line/20",
-                "focus:outline-none focus:ring-2 focus:ring-lime focus:ring-inset"
-              )}
+            <SpotlightCard
+              data-testid="spotlight-card"
+              className="h-full w-full"
             >
+              <Link
+                href={post.permalink}
+                className={cn(
+                  "group flex flex-col sm:grid sm:grid-cols-[auto_1fr_auto] gap-3 sm:gap-5 items-start sm:items-center",
+                  "p-4 sm:px-6 sm:py-5 transition-colors hover:bg-line/20",
+                  "focus:outline-none focus:ring-2 focus:ring-lime focus:ring-inset"
+                )}
+              >
               {/* Dot indicator */}
               <div className="flex items-center shrink-0">
                 <span
@@ -91,8 +96,9 @@ export function PostListView({
                 {post.readingTime} {siteConfig.ui.minReadSuffix}
               </div>
             </Link>
-          </li>
-        );
+          </SpotlightCard>
+        </li>
+      );
       })}
     </ul>
   );
