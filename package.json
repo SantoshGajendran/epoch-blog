@@ -9,7 +9,8 @@
     "velite": "velite build --strict",
     "typecheck": "tsc --noEmit",
     "lint": "next lint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "new-post": "node scripts/create-post.mjs"
   },
   "dependencies": {
     "@types/three": "^0.186.0",
