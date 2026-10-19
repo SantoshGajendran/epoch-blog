@@ -1,6 +1,6 @@
 # Epoch — Cybernetic AI Research & Engineering Publication
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fusername%2Fepoch-blog)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FSantoshGajendran%2Fepoch-blog)
 
 An immersive tech and AI research blog covering autonomous agents, RAG, fine-tuning, and scalable inference infrastructure. Built with Next.js 15, React 19, Three.js, GSAP, Web Audio API, and Velite MDX.
 
