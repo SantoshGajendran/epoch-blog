@@ -12,3 +12,13 @@ export {
   TipCard,
   type TipCardProps,
 } from "./tip-card";
+
+export {
+  LearningPathCard,
+  type LearningPathCardProps,
+} from "./learning-path-card";
+
+export {
+  SeriesRoadmapView,
+  type SeriesRoadmapViewProps,
+} from "./series-roadmap-view";
