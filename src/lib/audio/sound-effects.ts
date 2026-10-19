@@ -32,6 +32,16 @@ function getAudioContext(): AudioContext | null {
   return cachedContext;
 }
 
+function dispatchSoundPlay(): void {
+  if (typeof window !== "undefined") {
+    try {
+      window.dispatchEvent(new CustomEvent("epoch:sound-play"));
+    } catch {
+      // Ignored: custom event dispatch error
+    }
+  }
+}
+
 export function playNodeSelectSound(): void {
   const ctx = getAudioContext();
   if (!ctx) return;
@@ -55,6 +65,8 @@ export function playNodeSelectSound(): void {
 
     osc.start(now);
     osc.stop(now + duration);
+
+    dispatchSoundPlay();
   } catch {
     // Graceful degradation on Web Audio API errors
   }
@@ -83,12 +95,59 @@ export function playActionTick(): void {
 
     osc.start(now);
     osc.stop(now + duration);
+
+    dispatchSoundPlay();
   } catch {
     // Graceful degradation on Web Audio API errors
   }
 }
 
+let lastHoverTime = 0;
+const HOVER_THROTTLE_MS = 50;
+
+export function playHoverTick(): void {
+  const now = Date.now();
+  if (now - lastHoverTime < HOVER_THROTTLE_MS) {
+    return;
+  }
+  lastHoverTime = now;
+
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  try {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    const audioNow = ctx.currentTime;
+    const duration = 0.006; // ~6ms
+    const initialGain = 0.012;
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(580, audioNow);
+
+    gain.gain.setValueAtTime(initialGain, audioNow);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioNow + duration);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(audioNow);
+    osc.stop(audioNow + duration);
+
+    dispatchSoundPlay();
+  } catch {
+    // Graceful degradation on Web Audio API errors
+  }
+}
+
+export function resetHoverThrottleForTesting(): void {
+  lastHoverTime = 0;
+}
+
 export const soundEffects = {
   playNodeSelectSound,
   playActionTick,
+  playHoverTick,
+  resetHoverThrottleForTesting,
 };

@@ -38,6 +38,9 @@ export const graphConfigSchema = z.object({
     depthSpread: z.number().positive(),
     tiltSensitivity: z.number().positive(),
     ambientDriftSpeed: z.number().positive(),
+    orbitDamping: z.number().positive().default(0.05),
+    minDistanceRatio: z.number().positive().default(0.4),
+    maxDistanceRatio: z.number().positive().default(2.2),
   }),
 });
 

@@ -5,10 +5,12 @@ import { soundEffects } from "./sound-effects";
 
 const STORAGE_KEY = "epoch_sound_enabled";
 
+export type SoundType = "select" | "tick" | "hover";
+
 export interface SoundContextValue {
   isSoundEnabled: boolean;
   toggleSound: () => void;
-  playSound: (type: "select" | "tick") => void;
+  playSound: (type: SoundType) => void;
 }
 
 const SoundContext = React.createContext<SoundContextValue | null>(null);
@@ -40,13 +42,15 @@ export function SoundProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const playSound = React.useCallback(
-    (type: "select" | "tick") => {
+    (type: SoundType) => {
       if (!isSoundEnabled) return;
 
       if (type === "select") {
         soundEffects.playNodeSelectSound();
       } else if (type === "tick") {
         soundEffects.playActionTick();
+      } else if (type === "hover") {
+        soundEffects.playHoverTick();
       }
     },
     [isSoundEnabled]

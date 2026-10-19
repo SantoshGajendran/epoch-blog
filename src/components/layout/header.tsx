@@ -2,6 +2,7 @@
 
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
+import { AudioVisualizer } from "./audio-visualizer";
 import { Button } from "@/components/ui/button";
 import { Kbd } from "@/components/ui/kbd";
 import { siteConfig } from "@config/index";
@@ -29,6 +30,7 @@ export function Header() {
             <span>{siteConfig.ui.searchButtonLabel}</span>
             <Kbd className="hidden sm:inline-flex">{siteConfig.ui.searchShortcutLabel}</Kbd>
           </Button>
+          <AudioVisualizer />
           <Button
             variant="outline"
             size="icon"

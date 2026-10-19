@@ -54,6 +54,15 @@ export const siteConfigSchema = z.object({
     diagramStepPrefix: z.string().default("Step"),
     diagramOfPrefix: z.string().default("of"),
     diagramHeaderLabel: z.string().default("Interactive diagram"),
+    resetCameraLabel: z.string().default("Reset camera"),
+    telemetryClusterOnlineLabel: z.string().default("Cluster: online"),
+    telemetryNodesLabel: z.string().default("Nodes"),
+    telemetryPostsLabel: z.string().default("Posts"),
+    telemetrySignalsLabel: z.string().default("Signals"),
+    telemetryInferenceLabel: z.string().default("Inference"),
+    telemetrySynthActiveLabel: z.string().default("Synth: active"),
+    telemetrySynthMutedLabel: z.string().default("Muted"),
+    audioVisualizerAriaLabel: z.string().default("Audio frequency visualizer"),
   }),
 });
 

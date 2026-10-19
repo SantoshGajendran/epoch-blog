@@ -59,5 +59,8 @@ export const graphConfig: GraphConfig = graphConfigSchema.parse({
     depthSpread: 120,
     tiltSensitivity: 0.15,
     ambientDriftSpeed: 0.05,
+    orbitDamping: 0.05,
+    minDistanceRatio: 0.4,
+    maxDistanceRatio: 2.2,
   },
 });
