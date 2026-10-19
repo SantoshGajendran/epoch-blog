@@ -82,6 +82,11 @@ describe("NetworkMap3D & 2D/3D Mode Integration", () => {
     // Mock HTMLCanvasElement.prototype.getContext to safely degrade in jsdom
     HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue(null);
 
+    // Mock PointerEvent in jsdom
+    if (typeof window !== "undefined" && !window.PointerEvent) {
+      window.PointerEvent = window.MouseEvent as unknown as typeof PointerEvent;
+    }
+
     // Mock useOptionalSound
     vi.spyOn(audioModule, "useOptionalSound").mockReturnValue({
       isSoundEnabled: true,
@@ -389,7 +394,7 @@ describe("NetworkMap3D & 2D/3D Mode Integration", () => {
       render(<NetworkMap3D posts={mockPosts} onSelectPost={handleSelectPost} />);
       const canvas = screen.getByRole("region");
 
-      vi.spyOn(ThreeNetworkRenderer.prototype, "pickNeuron").mockReturnValueOnce({
+      vi.spyOn(ThreeNetworkRenderer.prototype, "pickNeuron").mockReturnValue({
         id: "post-1",
         label: "Post 1",
         topicId: "agents",
@@ -408,9 +413,59 @@ describe("NetworkMap3D & 2D/3D Mode Integration", () => {
       } as any);
 
       fireEvent.pointerDown(canvas, { clientX: 200, clientY: 200 });
+      fireEvent.pointerUp(canvas, { clientX: 200, clientY: 200 });
 
       expect(handleSelectPost).toHaveBeenCalledWith("post-agents-1");
       expect(playSoundMock).toHaveBeenCalledWith("select");
+    });
+
+    it("skips post selection when dragging to orbit the 3D stage", () => {
+      const handleSelectPost = vi.fn();
+      render(<NetworkMap3D posts={mockPosts} onSelectPost={handleSelectPost} />);
+      const canvas = screen.getByRole("region");
+
+      vi.spyOn(ThreeNetworkRenderer.prototype, "pickNeuron").mockReturnValue({
+        id: "post-1",
+        label: "Post 1",
+        topicId: "agents",
+        isPost: true,
+        x: 100,
+        y: 100,
+        baseX: 100,
+        baseY: 100,
+        vx: 0,
+        vy: 0,
+        layer: 2,
+        born: 0,
+        ins: [],
+        out: [],
+        post: mockPosts[0],
+      } as any);
+
+      // Start drag at (100, 100)
+      fireEvent.pointerDown(canvas, { clientX: 100, clientY: 100 });
+      // Move 40px (well above 5px drag threshold)
+      fireEvent.pointerMove(canvas, { clientX: 140, clientY: 140 });
+      // Release drag
+      fireEvent.pointerUp(canvas, { clientX: 140, clientY: 140 });
+
+      // Was a drag orbit, so selection should have been skipped!
+      expect(handleSelectPost).not.toHaveBeenCalled();
+    });
+
+    it("renders Reset View button with siteConfig.ui.resetCameraLabel and calls resetCamera on click", () => {
+      const resetSpy = vi.spyOn(ThreeNetworkRenderer.prototype, "resetCamera");
+      render(<NetworkMap3D posts={mockPosts} />);
+
+      const resetBtn = screen.getByRole("button", {
+        name: siteConfig.ui.resetCameraLabel,
+      });
+      expect(resetBtn).toBeInTheDocument();
+
+      fireEvent.click(resetBtn);
+
+      expect(resetSpy).toHaveBeenCalledTimes(1);
+      expect(playSoundMock).toHaveBeenCalledWith("tick");
     });
   });
 

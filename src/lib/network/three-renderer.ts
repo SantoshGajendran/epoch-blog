@@ -62,6 +62,31 @@ export class ThreeNetworkRenderer {
   private baseDistance: number = 724;
   private lastAmbientSpawn: number = 0;
 
+  // Spherical orbit coordinates & damping
+  private currentTheta: number = 0;
+  private targetTheta: number = 0;
+  private currentPhi: number = Math.PI / 2;
+  private targetPhi: number = Math.PI / 2;
+  private currentRadius: number = 724;
+  private targetRadius: number = 724;
+
+  // Drag-to-orbit pointer tracking
+  private isOrbiting: boolean = false;
+  private orbitStartX: number = 0;
+  private orbitStartY: number = 0;
+  private orbitPrevX: number = 0;
+  private orbitPrevY: number = 0;
+  private orbitTotalDistance: number = 0;
+  private orbitSensitivity: number = 0.005;
+
+  // Camera reset animation
+  private isResetting: boolean = false;
+  private resetStartTime: number = 0;
+  private resetDuration: number = 700;
+  private resetStartTheta: number = 0;
+  private resetStartPhi: number = Math.PI / 2;
+  private resetStartRadius: number = 724;
+
   constructor(
     canvas: HTMLCanvasElement,
     config: GraphConfig,
@@ -83,8 +108,14 @@ export class ThreeNetworkRenderer {
 
     const fovRad = (fov * Math.PI) / 180;
     this.baseDistance = this.height / 2 / Math.tan(fovRad / 2);
-    this.camera.position.set(0, 0, this.baseDistance);
-    this.camera.lookAt(0, 0, 0);
+    this.currentRadius = this.baseDistance;
+    this.targetRadius = this.baseDistance;
+    this.currentTheta = 0;
+    this.targetTheta = 0;
+    this.currentPhi = Math.PI / 2;
+    this.targetPhi = Math.PI / 2;
+
+    this.updateCameraTransform();
 
     if (customRenderer) {
       this.renderer = customRenderer;
@@ -321,11 +352,40 @@ export class ThreeNetworkRenderer {
     this.camera.fov = fov;
 
     const fovRad = (fov * Math.PI) / 180;
+    const prevBase = this.baseDistance;
     this.baseDistance = height / 2 / Math.tan(fovRad / 2);
-    this.camera.position.z = this.baseDistance;
+
+    if (prevBase > 0) {
+      const ratio = this.baseDistance / prevBase;
+      this.targetRadius *= ratio;
+      this.currentRadius *= ratio;
+    } else {
+      this.targetRadius = this.baseDistance;
+      this.currentRadius = this.baseDistance;
+    }
+
+    const minDistance = this.baseDistance * this.config.three.minDistanceRatio;
+    const maxDistance = this.baseDistance * this.config.three.maxDistanceRatio;
+    this.targetRadius = Math.max(minDistance, Math.min(maxDistance, this.targetRadius));
+
+    this.updateCameraTransform();
     this.camera.updateProjectionMatrix();
 
     this.updateNodePositions();
+  }
+
+  private updateCameraTransform(): void {
+    const sinPhi = Math.sin(this.currentPhi);
+    const cosPhi = Math.cos(this.currentPhi);
+    const sinTheta = Math.sin(this.currentTheta);
+    const cosTheta = Math.cos(this.currentTheta);
+
+    this.camera.position.set(
+      this.currentRadius * sinPhi * sinTheta,
+      this.currentRadius * cosPhi,
+      this.currentRadius * sinPhi * cosTheta
+    );
+    this.camera.lookAt(0, 0, 0);
   }
 
   /**
@@ -549,10 +609,15 @@ export class ThreeNetworkRenderer {
     }
 
     if (isReducedMotion) {
-      this.camera.rotation.set(0, 0, 0);
-      this.camera.position.set(0, 0, this.baseDistance);
+      this.isResetting = false;
       this.currentTiltX = 0;
       this.currentTiltY = 0;
+
+      this.currentTheta = this.targetTheta;
+      this.currentPhi = this.targetPhi;
+      this.currentRadius = this.targetRadius;
+
+      this.updateCameraTransform();
 
       if (this.graph) {
         this.signalSystem.updateSignals(dt, this.graph, true);
@@ -561,6 +626,39 @@ export class ThreeNetworkRenderer {
         sm.visible = false;
       }
     } else {
+      if (this.isResetting) {
+        if (this.resetStartTime === 0) {
+          this.resetStartTime = now;
+        }
+        const elapsed = now - this.resetStartTime;
+        const progress = Math.min(1, Math.max(0, elapsed / this.resetDuration));
+        const ease =
+          progress < 0.5
+            ? 4 * progress * progress * progress
+            : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+        this.currentTheta =
+          this.resetStartTheta + (this.targetTheta - this.resetStartTheta) * ease;
+        this.currentPhi =
+          this.resetStartPhi + (this.targetPhi - this.resetStartPhi) * ease;
+        this.currentRadius =
+          this.resetStartRadius + (this.targetRadius - this.resetStartRadius) * ease;
+
+        if (progress >= 1) {
+          this.isResetting = false;
+          this.currentTheta = this.targetTheta;
+          this.currentPhi = this.targetPhi;
+          this.currentRadius = this.targetRadius;
+        }
+      } else {
+        const damping = this.config.three.orbitDamping;
+        this.currentTheta += (this.targetTheta - this.currentTheta) * damping;
+        this.currentPhi += (this.targetPhi - this.currentPhi) * damping;
+        this.currentRadius += (this.targetRadius - this.currentRadius) * damping;
+      }
+
+      this.currentPhi = Math.max(0.1, Math.min(Math.PI - 0.1, this.currentPhi));
+
       // Ambient camera drift
       const driftSpeed = this.config.three.ambientDriftSpeed;
       const driftAngle = now * 0.001 * driftSpeed;
@@ -570,8 +668,10 @@ export class ThreeNetworkRenderer {
       // Smooth camera tilt
       this.currentTiltX += (this.targetTiltX + driftRotX - this.currentTiltX) * 0.08;
       this.currentTiltY += (this.targetTiltY + driftRotY - this.currentTiltY) * 0.08;
-      this.camera.rotation.x = this.currentTiltX;
-      this.camera.rotation.y = this.currentTiltY;
+
+      this.updateCameraTransform();
+      this.camera.rotation.x += this.currentTiltX;
+      this.camera.rotation.y += this.currentTiltY;
 
       // Rotate post neuron halo rings
       for (const halo of this.haloMap.values()) {
@@ -703,5 +803,90 @@ export class ThreeNetworkRenderer {
 
   getActiveSignalCount(): number {
     return this.signalSystem.activeSignals.length;
+  }
+
+  /**
+   * Initiates orbit drag interaction, recording pointer origin.
+   */
+  startOrbit(clientX: number, clientY: number): void {
+    this.isOrbiting = true;
+    this.isResetting = false;
+    this.orbitStartX = clientX;
+    this.orbitStartY = clientY;
+    this.orbitPrevX = clientX;
+    this.orbitPrevY = clientY;
+    this.orbitTotalDistance = 0;
+  }
+
+  /**
+   * Updates orbit azimuth and polar angles based on pointer displacement.
+   */
+  updateOrbit(clientX: number, clientY: number): void {
+    if (!this.isOrbiting) return;
+
+    const deltaX = clientX - this.orbitPrevX;
+    const deltaY = clientY - this.orbitPrevY;
+    this.orbitPrevX = clientX;
+    this.orbitPrevY = clientY;
+
+    const distFromStart = Math.hypot(clientX - this.orbitStartX, clientY - this.orbitStartY);
+    if (distFromStart > this.orbitTotalDistance) {
+      this.orbitTotalDistance = distFromStart;
+    }
+
+    this.targetTheta -= deltaX * this.orbitSensitivity;
+    this.targetPhi += deltaY * this.orbitSensitivity;
+    this.targetPhi = Math.max(0.1, Math.min(Math.PI - 0.1, this.targetPhi));
+  }
+
+  /**
+   * Ends orbit drag interaction. Returns true if total drag displacement >= 5px,
+   * indicating a deliberate drag orbit, or false if < 5px (indicating a click).
+   */
+  endOrbit(): boolean {
+    const wasDrag = this.orbitTotalDistance >= 5;
+    this.isOrbiting = false;
+    return wasDrag;
+  }
+
+  /**
+   * Adjusts target camera distance within configured safe bounds.
+   */
+  handleZoom(deltaY: number): void {
+    this.isResetting = false;
+    const clampedDelta = Math.max(-100, Math.min(100, deltaY));
+    this.targetRadius *= 1 + clampedDelta * 0.001;
+
+    const minDistance = this.baseDistance * this.config.three.minDistanceRatio;
+    const maxDistance = this.baseDistance * this.config.three.maxDistanceRatio;
+    this.targetRadius = Math.max(minDistance, Math.min(maxDistance, this.targetRadius));
+  }
+
+  /**
+   * Initiates animated camera transition resetting theta to 0, phi to PI/2,
+   * and distance to baseDistance.
+   */
+  resetCamera(): void {
+    this.isResetting = true;
+    this.resetStartTime = 0;
+    this.resetStartTheta = this.currentTheta;
+    this.resetStartPhi = this.currentPhi;
+    this.resetStartRadius = this.currentRadius;
+
+    this.targetTheta = 0;
+    this.targetPhi = Math.PI / 2;
+    this.targetRadius = this.baseDistance;
+  }
+
+  isCameraResetting(): boolean {
+    return this.isResetting;
+  }
+
+  getBaseDistance(): number {
+    return this.baseDistance;
+  }
+
+  getCameraDistance(): number {
+    return this.targetRadius;
   }
 }

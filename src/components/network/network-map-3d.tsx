@@ -7,7 +7,8 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { topicsConfig, graphConfig } from "@config/index";
+import { topicsConfig, graphConfig, siteConfig } from "@config/index";
+import { RotateCcw } from "lucide-react";
 import { buildNetworkGraph, ThreeNetworkRenderer } from "@/lib/network";
 import type { Post } from "@/lib/content";
 import { useOptionalSound } from "@/lib/audio";
@@ -89,6 +90,7 @@ export function NetworkMap3D({
   const settleCountRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
   const lastSelectedSlugRef = useRef<string | null>(null);
+  const isPointerDownRef = useRef<boolean>(false);
 
   // Core 3D render loop function
   const loop = useCallback(
@@ -111,7 +113,11 @@ export function NetworkMap3D({
 
       rendererRef.current?.render(dt, time, isReducedMotionRef.current);
 
-      if (!isReducedMotionRef.current || settleCountRef.current++ < 60) {
+      if (
+        !isReducedMotionRef.current ||
+        rendererRef.current?.isCameraResetting() ||
+        settleCountRef.current++ < 60
+      ) {
         rafIdRef.current = requestAnimationFrame(loop);
       } else {
         isLoopRunningRef.current = false;
@@ -278,6 +284,13 @@ export function NetworkMap3D({
       });
     }
 
+    // Native wheel zoom listener
+    const handleNativeWheel = (e: WheelEvent) => {
+      rendererRef.current?.handleZoom(e.deltaY);
+      kickLoop();
+    };
+    canvas.addEventListener("wheel", handleNativeWheel, { passive: true });
+
     // Start render loop
     kickLoop();
 
@@ -286,6 +299,7 @@ export function NetworkMap3D({
         cancelAnimationFrame(rafIdRef.current);
       }
       isLoopRunningRef.current = false;
+      canvas.removeEventListener("wheel", handleNativeWheel);
       resizeObserver?.disconnect();
       intersectionObserver?.disconnect();
       themeObserver?.disconnect();
@@ -314,8 +328,13 @@ export function NetworkMap3D({
     const rect = canvas.getBoundingClientRect();
     renderer.setCursor(e.clientX, e.clientY, rect);
 
-    const hit = renderer.pickNeuron(e.clientX, e.clientY, rect);
-    canvas.style.cursor = hit ? "pointer" : "default";
+    if (isPointerDownRef.current) {
+      renderer.updateOrbit(e.clientX, e.clientY);
+      canvas.style.cursor = "grab";
+    } else {
+      const hit = renderer.pickNeuron(e.clientX, e.clientY, rect);
+      canvas.style.cursor = hit ? "pointer" : "default";
+    }
 
     kickLoop();
   };
@@ -325,28 +344,92 @@ export function NetworkMap3D({
     const renderer = rendererRef.current;
     if (!canvas || !renderer) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const hit = renderer.pickNeuron(e.clientX, e.clientY, rect);
+    isPointerDownRef.current = true;
+    renderer.startOrbit(e.clientX, e.clientY);
 
-    if (hit && hit.post) {
-      handleSelectPost(hit.post.slug);
-      renderer.setSelectedNeuron(hit);
+    try {
+      if (typeof canvas.setPointerCapture === "function") {
+        canvas.setPointerCapture(e.pointerId);
+      }
+    } catch {
+      // Ignored in test / headless environments
+    }
 
-      const idx = interactivePostNeurons.findIndex((n) => n.id === hit.id);
-      if (idx !== -1) {
-        focusedNeuronIndexRef.current = idx;
+    kickLoop();
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    const renderer = rendererRef.current;
+    if (!canvas || !renderer) return;
+
+    try {
+      if (typeof canvas.releasePointerCapture === "function") {
+        canvas.releasePointerCapture(e.pointerId);
+      }
+    } catch {
+      // Ignored
+    }
+
+    const wasDrag = renderer.endOrbit();
+    isPointerDownRef.current = false;
+
+    if (!wasDrag) {
+      const rect = canvas.getBoundingClientRect();
+      const hit = renderer.pickNeuron(e.clientX, e.clientY, rect);
+
+      if (hit && hit.post) {
+        handleSelectPost(hit.post.slug);
+        renderer.setSelectedNeuron(hit);
+
+        const idx = interactivePostNeurons.findIndex((n) => n.id === hit.id);
+        if (idx !== -1) {
+          focusedNeuronIndexRef.current = idx;
+        }
       }
     }
+
+    const rect = canvas.getBoundingClientRect();
+    const hit = renderer.pickNeuron(e.clientX, e.clientY, rect);
+    canvas.style.cursor = hit ? "pointer" : "default";
 
     kickLoop();
   };
 
   const handlePointerLeave = () => {
     const canvas = canvasRef.current;
+    const renderer = rendererRef.current;
+    if (renderer && isPointerDownRef.current) {
+      renderer.endOrbit();
+      isPointerDownRef.current = false;
+    }
     if (canvas) {
       canvas.style.cursor = "default";
     }
   };
+
+  const handlePointerCancel = () => {
+    const canvas = canvasRef.current;
+    const renderer = rendererRef.current;
+    if (renderer && isPointerDownRef.current) {
+      renderer.endOrbit();
+      isPointerDownRef.current = false;
+    }
+    if (canvas) {
+      canvas.style.cursor = "default";
+    }
+  };
+
+  const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
+    rendererRef.current?.handleZoom(e.deltaY);
+    kickLoop();
+  };
+
+  const handleResetCamera = useCallback(() => {
+    rendererRef.current?.resetCamera();
+    sound?.playSound("tick");
+    kickLoop();
+  }, [sound, kickLoop]);
 
   // Keyboard accessibility handler
   const handleKeyDown = (e: React.KeyboardEvent<HTMLCanvasElement>) => {
@@ -419,10 +502,25 @@ export function NetworkMap3D({
         aria-label={ariaLabel}
         onPointerMove={handlePointerMove}
         onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerLeave}
+        onPointerCancel={handlePointerCancel}
+        onWheel={handleWheel}
         onKeyDown={handleKeyDown}
         className="absolute inset-0 w-full h-full cursor-default focus:outline-none focus:ring-2 focus:ring-lime focus:ring-inset"
       />
+
+      {/* Reset Camera View HUD Control */}
+      <button
+        type="button"
+        onClick={handleResetCamera}
+        aria-label={siteConfig.ui.resetCameraLabel}
+        title={siteConfig.ui.resetCameraLabel}
+        className="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono font-medium text-mut hover:text-ink bg-surf/70 hover:bg-surf/90 backdrop-blur-md border border-line/70 rounded-lg shadow-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-lime"
+      >
+        <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+        <span>{siteConfig.ui.resetCameraLabel}</span>
+      </button>
 
       {/* Floating post preview card when post is selected */}
       {selectedPost && (
