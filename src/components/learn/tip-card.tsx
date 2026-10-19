@@ -35,22 +35,20 @@ export function TipCard({ tip, onCopy, className }: TipCardProps) {
     try {
       if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(tip.codeSnippet);
+        sound?.playSound("tick");
+        onCopy?.();
+        setCopied(true);
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+        timerRef.current = setTimeout(() => {
+          setCopied(false);
+          timerRef.current = null;
+        }, 2000);
       }
     } catch {
-      // Gracefully handle clipboard write rejection without throwing
+      // Gracefully handle clipboard write rejection without false positive success state
     }
-
-    sound?.playSound("tick");
-    onCopy?.();
-
-    setCopied(true);
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    timerRef.current = setTimeout(() => {
-      setCopied(false);
-      timerRef.current = null;
-    }, 2000);
   };
 
   const defaultCopyLabel = tip.copyLabel && tip.copyLabel.trim() !== ""

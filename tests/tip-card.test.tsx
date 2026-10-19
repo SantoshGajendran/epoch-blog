@@ -131,15 +131,16 @@ describe("TipCard Component", () => {
     expect(writeTextMock).toHaveBeenCalled();
   });
 
-  it("handles clipboard write failure gracefully without throwing", async () => {
+  it("handles clipboard write failure gracefully without throwing and does not set copied state", async () => {
     const writeTextMock = vi.fn().mockRejectedValue(new Error("Clipboard permission denied"));
     Object.defineProperty(navigator, "clipboard", {
       value: { writeText: writeTextMock },
       writable: true,
       configurable: true,
     });
+    const onCopyMock = vi.fn();
 
-    render(<TipCard tip={mockTip} />);
+    render(<TipCard tip={mockTip} onCopy={onCopyMock} />);
 
     const copyBtn = screen.getByRole("button", { name: "Copy command" });
 
@@ -149,6 +150,9 @@ describe("TipCard Component", () => {
     });
 
     expect(writeTextMock).toHaveBeenCalled();
+    expect(onCopyMock).not.toHaveBeenCalled();
+    expect(screen.queryByText(siteConfig.ui.copiedSnippetLabel)).not.toBeInTheDocument();
+    expect(screen.getByText("Copy command")).toBeInTheDocument();
   });
 
   it("applies custom className", () => {

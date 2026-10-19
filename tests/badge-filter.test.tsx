@@ -103,9 +103,12 @@ describe("BadgeFilterBar Component", () => {
         activeBadges={new Set(["LLM"])}
         onToggleBadge={vi.fn()}
         onClear={vi.fn()}
-        itemCounts={{ LLM: 5, RAG: 2, Setup: 0 }}
+        itemCounts={{ [siteConfig.ui.filterAllLabel]: 7, LLM: 5, RAG: 2, Setup: 0 }}
       />
     );
+
+    const allBtn = screen.getByRole("button", { name: new RegExp(siteConfig.ui.filterAllLabel, "i") });
+    expect(allBtn).toHaveTextContent("7");
 
     const llmBtn = screen.getByRole("button", { name: /LLM/i });
     expect(llmBtn).toHaveTextContent("5");

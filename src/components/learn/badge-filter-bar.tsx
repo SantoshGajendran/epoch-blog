@@ -39,6 +39,9 @@ export function BadgeFilterBar({
   };
 
   const isAllActive = activeBadges.size === 0;
+  const allCount = itemCounts
+    ? (itemCounts[siteConfig.ui.filterAllLabel] ?? itemCounts["All"])
+    : undefined;
 
   return (
     <div
@@ -60,14 +63,14 @@ export function BadgeFilterBar({
         )}
       >
         <span>{siteConfig.ui.filterAllLabel}</span>
-        {itemCounts && itemCounts["All"] !== undefined && (
+        {allCount !== undefined && (
           <span
             className={cn(
               "px-1.5 py-0.5 rounded-full text-[10px] font-mono leading-none",
               isAllActive ? "bg-limeink/20 text-limeink font-semibold" : "bg-line/50 text-mut"
             )}
           >
-            {itemCounts["All"]}
+            {allCount}
           </span>
         )}
       </button>
