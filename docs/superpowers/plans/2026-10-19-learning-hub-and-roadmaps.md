@@ -41,7 +41,7 @@
   - `getAllTips(): Tip[]`
   - `getPathById(id: string): Path | undefined`
 
-- [ ] **Step 1: Write failing test for paths and tips schemas**
+- [x] **Step 1: Write failing test for paths and tips schemas**
 
 ```typescript
 // tests/content-learning-schema.test.ts
@@ -72,22 +72,22 @@ describe("Learning Content Collections Schema", () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify failure**
+- [x] **Step 2: Run test to verify failure**
 Run: `npm run test -- tests/content-learning-schema.test.ts`
 Expected: FAIL with `getAllPaths` not exported.
 
-- [ ] **Step 3: Define Velite collections, seed MDX files, and queries**
+- [x] **Step 3: Define Velite collections, seed MDX files, and queries**
 Update `velite.config.ts` with `paths` and `tips`.
 Update `src/lib/content/types.ts` and `src/lib/content/queries.ts`.
 Create `content/paths/llm-systems-engineering.mdx`, `content/paths/autonomous-agents.mdx`.
 Create `content/tips/pytorch-cuda-alloc-conf.mdx`, `content/tips/vllm-speculative-tokens.mdx`, `content/tips/rag-hybrid-rerank.mdx`.
 Run `npx velite build --strict`.
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 Run: `npm run test -- tests/content-learning-schema.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 `git add velite.config.ts src/lib/content/ content/paths/ content/tips/ tests/content-learning-schema.test.ts`
 `git commit -m "feat(content): add velite collections and seed content for paths and tips"`
 
@@ -122,7 +122,7 @@ Expected: PASS.
     - `isStepCompleted(stepKey: string): boolean`
     - `getPathProgress(pathId: string, stepIds: string[]): { completed: number; total: number; percentage: number }`
 
-- [ ] **Step 1: Write failing tests for progress storage and config**
+- [x] **Step 1: Write failing tests for progress storage and config**
 
 ```typescript
 // tests/progress-storage.test.ts
@@ -181,19 +181,19 @@ describe("Learning Hub Configuration", () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 Run: `npm run test -- tests/progress-storage.test.ts tests/config-learning.test.ts`
 Expected: FAIL with missing storage functions and config labels.
 
-- [ ] **Step 3: Implement config labels and `progress-storage.ts`**
+- [x] **Step 3: Implement config labels and `progress-storage.ts`**
 Add labels to `config/schemas/site.ts` and `config/site.ts`.
 Create `src/lib/learn/progress-storage.ts` with SSR guards and storage error handling.
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 Run: `npm run test -- tests/progress-storage.test.ts tests/config-learning.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 `git add config/ src/lib/learn/ tests/progress-storage.test.ts tests/config-learning.test.ts`
 `git commit -m "feat(learn): implement learning config labels and persistent progress storage"`
 
@@ -215,7 +215,7 @@ Expected: PASS.
   - `<BadgeFilterBar availableBadges={string[]} activeBadges={Set<string>} onToggleBadge={(badge: string) => void} onClear={() => void} itemCounts={Record<string, number>} />`
   - `<TipCard tip={Tip} onCopy?: () => void />`
 
-- [ ] **Step 1: Write failing tests for BadgeFilterBar and TipCard**
+- [x] **Step 1: Write failing tests for BadgeFilterBar and TipCard**
 
 ```typescript
 // tests/badge-filter.test.tsx
@@ -287,20 +287,20 @@ describe("TipCard Component", () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 Run: `npm run test -- tests/badge-filter.test.tsx tests/tip-card.test.tsx`
 Expected: FAIL with components missing.
 
-- [ ] **Step 3: Implement components**
+- [x] **Step 3: Implement components**
 Create `src/components/learn/learning-stats-bar.tsx`.
 Create `src/components/learn/badge-filter-bar.tsx`.
 Create `src/components/learn/tip-card.tsx` with `<SpotlightCard>` and clipboard copy.
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 Run: `npm run test -- tests/badge-filter.test.tsx tests/tip-card.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 `git add src/components/learn/ tests/badge-filter.test.tsx tests/tip-card.test.tsx`
 `git commit -m "feat(learn): implement badge filter bar, learning stats ticker, and tip card"`
 
@@ -320,7 +320,7 @@ Expected: PASS.
   - `<LearningPathCard path={Path} onToggleStep={(stepKey: string) => void} isCompleted={(stepKey: string) => boolean} />`
   - `<SeriesRoadmapView seriesList={Series[]} posts={Post[]} />`
 
-- [ ] **Step 1: Write failing tests for LearningPathCard and SeriesRoadmapView**
+- [x] **Step 1: Write failing tests for LearningPathCard and SeriesRoadmapView**
 
 ```typescript
 // tests/learning-path-card.test.tsx
@@ -370,19 +370,19 @@ describe("LearningPathCard Component", () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 Run: `npm run test -- tests/learning-path-card.test.tsx tests/series-roadmap.test.tsx`
 Expected: FAIL with components missing.
 
-- [ ] **Step 3: Implement components**
+- [x] **Step 3: Implement components**
 Create `src/components/learn/learning-path-card.tsx` with circuit line connecting milestones and progress bar.
 Create `src/components/learn/series-roadmap-view.tsx` rendering multi-part series with chapter links.
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 Run: `npm run test -- tests/learning-path-card.test.tsx tests/series-roadmap.test.tsx`
 Expected: PASS.
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 `git add src/components/learn/ tests/learning-path-card.test.tsx tests/series-roadmap.test.tsx`
 `git commit -m "feat(learn): implement learning path circuit cards and series roadmaps view"`
 
@@ -405,7 +405,7 @@ Expected: PASS.
   - Header navigation link: `navLearnLabel` ("Learn") -> `/learn`.
   - Search indexing for `"path"` and `"tip"` items in `MiniSearch`.
 
-- [ ] **Step 1: Write failing tests for `/learn` page and search indexing**
+- [x] **Step 1: Write failing tests for `/learn` page and search indexing**
 
 ```typescript
 // tests/learning-hub-page.test.tsx
@@ -426,20 +426,20 @@ describe("Learning Hub Page", () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify failure**
+- [x] **Step 2: Run tests to verify failure**
 Run: `npm run test -- tests/learning-hub-page.test.tsx tests/learning-search.test.ts`
 Expected: FAIL with page missing.
 
-- [ ] **Step 3: Implement `src/app/learn/page.tsx`, Header link, and search indexing**
+- [x] **Step 3: Implement `src/app/learn/page.tsx`, Header link, and search indexing**
 Create `src/app/learn/page.tsx` with tabs, filter bar, and views.
 Update `src/components/layout/header.tsx` to include `Learn` navigation link.
 Update `src/lib/search/types.ts` and `src/lib/search/index.ts` to index tips and paths.
 
-- [ ] **Step 4: Run tests to verify pass**
+- [x] **Step 4: Run tests to verify pass**
 Run: `npm run test -- tests/learning-hub-page.test.tsx tests/learning-search.test.ts`
 Expected: PASS.
 
-- [ ] **Step 5: Commit changes**
+- [x] **Step 5: Commit changes**
 `git add src/app/learn/ src/components/layout/header.tsx src/lib/search/ tests/learning-hub-page.test.tsx tests/learning-search.test.ts`
 `git commit -m "feat(learn): implement learning hub page, header navigation link, and search index integration"`
 
@@ -450,25 +450,25 @@ Expected: PASS.
 **Files:**
 - Visual polish, dark/light theme audit, mobile responsiveness.
 
-- [ ] **Step 1: Run TypeScript typecheck**
+- [x] **Step 1: Run TypeScript typecheck**
 Run: `npm run typecheck`
 Expected: 0 errors.
 
-- [ ] **Step 2: Run Next.js linter**
+- [x] **Step 2: Run Next.js linter**
 Run: `npm run lint`
 Expected: 0 warnings, 0 errors.
 
-- [ ] **Step 3: Run full Vitest test suite**
+- [x] **Step 3: Run full Vitest test suite**
 Run: `npm run test`
 Expected: All test suites passing.
 
-- [ ] **Step 4: Run production build**
+- [x] **Step 4: Run production build**
 Run: `npm run build`
 Expected: Velite strict build succeeds, Next.js generates static pages including `/learn`.
 
-- [ ] **Step 5: Push update to GitHub and verify Vercel deployment**
+- [x] **Step 5: Push update to GitHub and verify Vercel deployment**
 Run: `git push origin master ; git push origin master:main`
 Expected: Live deployment automatically triggered on Vercel.
 
-- [ ] **Step 6: Milestone commit**
+- [x] **Step 6: Milestone commit**
 `git commit -m "milestone: complete learning hub, roadmaps, and engineering tips acceptance verification"`
