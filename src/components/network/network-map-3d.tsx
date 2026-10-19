@@ -98,6 +98,11 @@ export function NetworkMap3D({
         return;
       }
 
+      if (!rendererRef.current) {
+        isLoopRunningRef.current = false;
+        return;
+      }
+
       const dt =
         lastTimeRef.current > 0
           ? Math.min(time - lastTimeRef.current, 64)
