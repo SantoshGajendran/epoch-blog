@@ -1,0 +1,29 @@
+---
+id: "llm-systems-engineering"
+title: "LLM Systems Engineering Roadmap"
+summary: "Master GPU memory management, KV caching, speculative decoding, and high-throughput inference serving engines."
+badge: "LLM"
+level: "Intermediate"
+estimatedHours: 12
+order: 1
+steps:
+  - id: "step-1"
+    title: "Inference Architecture & KV Cache"
+    description: "Understand vLLM PagedAttention and KV cache dynamics."
+    postSlug: "infra-vllm-speculative-decoding"
+    type: "article"
+  - id: "step-2"
+    title: "Speculative Decoding Deep Dive"
+    description: "Implement draft verification loops with small draft models."
+    postSlug: "infra-vllm-speculative-decoding"
+    type: "code"
+  - id: "step-3"
+    title: "Throughput & Latency Benchmarking"
+    description: "Profile TTFT and inter-token latency under high concurrency."
+    externalUrl: "https://github.com/vllm-project/vllm"
+    type: "benchmark"
+---
+
+# LLM Systems Engineering Roadmap
+
+A comprehensive, production-oriented curriculum for building high-throughput, low-latency LLM serving infrastructure.

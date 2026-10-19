@@ -1,6 +1,15 @@
-import { posts, series, type Post, type Series } from "#site/content";
+import {
+  posts,
+  series,
+  paths,
+  tips,
+  type Post,
+  type Series,
+  type Path,
+  type Tip,
+} from "#site/content";
 
-export type { Post, Series };
+export type { Post, Series, Path, Tip };
 
 export type ContentPost = Omit<Post, "body" | "metadata"> & {
   body?: Post["body"];
@@ -73,4 +82,20 @@ export function findRelatedPosts<
 
 export function getRelatedPosts(post: Post, limit = 3): Post[] {
   return findRelatedPosts(post, getAllPosts(), limit);
+}
+
+export function getAllPaths(): Path[] {
+  return [...paths].sort((a, b) => a.order - b.order);
+}
+
+export function getPathById(id: string): Path | undefined {
+  return paths.find((p) => p.id === id);
+}
+
+export function getAllTips(): Tip[] {
+  return [...tips].sort((a, b) => a.order - b.order);
+}
+
+export function getTipById(id: string): Tip | undefined {
+  return tips.find((t) => t.id === id);
 }

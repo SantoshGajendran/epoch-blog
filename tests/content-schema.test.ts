@@ -84,5 +84,7 @@ describe("Content Schema Constraints", () => {
     const content = await import("#site/content");
     expect(Array.isArray(content.posts)).toBe(true);
     expect(Array.isArray(content.series)).toBe(true);
+    expect(Array.isArray(content.paths)).toBe(true);
+    expect(Array.isArray(content.tips)).toBe(true);
   });
 });

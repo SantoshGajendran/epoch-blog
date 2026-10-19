@@ -1,0 +1,13 @@
+---
+id: "rag-hybrid-rerank"
+title: "Optimized RRF Constant for Hybrid Search"
+summary: "Standardize Reciprocal Rank Fusion k=60 constant for optimal balance between sparse BM25 and dense vector rankings."
+badges:
+  - "RAG"
+  - "LLM"
+codeSnippet: "score = 1.0 / (60 + rank_sparse) + 1.0 / (60 + rank_dense)"
+copyLabel: "Copy snippet"
+order: 3
+---
+
+Reciprocal Rank Fusion (RRF) combines ranked lists from disparate retrieval strategies without requiring score normalization. The smoothing constant `k=60` balances top-ranked high-confidence matches against longer-tail semantic relevance, preventing sparse keyword outliers from dominating vector semantic proximity.

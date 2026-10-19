@@ -1,0 +1,13 @@
+---
+id: "vllm-speculative-tokens"
+title: "Tune Speculative Decoding Draft Length"
+summary: "Balance acceptance rate and verification overhead by setting num_speculative_tokens."
+badges:
+  - "LLM"
+  - "Infra"
+codeSnippet: "python -m vllm.entrypoints.openai.api_server --model meta-llama/Llama-3-70B-Instruct --speculative-model meta-llama/Llama-3-8B-Instruct --num-speculative-tokens 5"
+copyLabel: "Copy snippet"
+order: 2
+---
+
+Speculative decoding relies on a lightweight draft model proposing tokens verified in parallel by the target model. If `num_speculative_tokens` is too high, unaccepted draft tokens waste verification compute. A draft length between 4 and 6 tokens typically yields the best speedup across standard text generation benchmarks.

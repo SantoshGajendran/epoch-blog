@@ -69,6 +69,66 @@ export const series = defineCollection({
     }),
 });
 
+export const paths = defineCollection({
+  name: "Path",
+  pattern: "paths/**/*.mdx",
+  schema: s
+    .object({
+      id: s.string(),
+      title: s.string().max(120),
+      summary: s.string().max(300),
+      badge: s.string(),
+      level: s.enum(["Beginner", "Intermediate", "Advanced"]),
+      estimatedHours: s.number().positive(),
+      order: s.number().int().default(1),
+      steps: s.array(
+        s.object({
+          id: s.string(),
+          title: s.string().max(140),
+          description: s.string(),
+          postSlug: s.string().optional(),
+          externalUrl: s.string().optional(),
+          type: s.enum(["article", "code", "benchmark"]).default("article"),
+        })
+      ),
+      body: s.mdx(),
+    })
+    .transform((data, { meta }) => {
+      const normalizedPath = meta.path.replace(/\\/g, "/");
+      const slug = normalizedPath.replace(/^(.*\/)?paths\//, "").replace(/\.mdx$/, "");
+      return {
+        ...data,
+        slug,
+        permalink: `/learn/paths/${slug}`,
+      };
+    }),
+});
+
+export const tips = defineCollection({
+  name: "Tip",
+  pattern: "tips/**/*.mdx",
+  schema: s
+    .object({
+      id: s.string(),
+      title: s.string().max(120),
+      summary: s.string().max(300),
+      badges: s.array(s.string()),
+      codeSnippet: s.string(),
+      copyLabel: s.string().default("Copy snippet"),
+      order: s.number().int().default(1),
+      body: s.mdx(),
+    })
+    .transform((data, { meta }) => {
+      const normalizedPath = meta.path.replace(/\\/g, "/");
+      const slug = normalizedPath.replace(/^(.*\/)?tips\//, "").replace(/\.mdx$/, "");
+      return {
+        ...data,
+        slug,
+        permalink: `/learn/tips/${slug}`,
+      };
+    }),
+});
+
 export default defineConfig({
   root: "content",
   strict: true,
@@ -79,7 +139,7 @@ export default defineConfig({
     name: "[name]-[hash:6].[ext]",
     clean: true,
   },
-  collections: { posts, series },
+  collections: { posts, series, paths, tips },
   mdx: {
     remarkPlugins: [remarkGfm],
     rehypePlugins: [

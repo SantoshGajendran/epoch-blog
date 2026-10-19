@@ -1,0 +1,14 @@
+---
+id: "pytorch-cuda-alloc-conf"
+title: "Prevent PyTorch OOM with Expandable Segments"
+summary: "Configure PyTorch CUDA memory allocator to reduce fragmentation during variable-length batch inference."
+badges:
+  - "LLM"
+  - "Setup"
+  - "Infra"
+codeSnippet: "export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
+copyLabel: "Copy snippet"
+order: 1
+---
+
+When serving models with variable-length sequences, PyTorch's native caching allocator can cause virtual memory fragmentation leading to unexpected CUDA Out of Memory (OOM) errors even when physical memory is available. Setting `expandable_segments:True` allows PyTorch to allocate memory in virtual contiguous chunks, mitigating fragmentation overhead.
