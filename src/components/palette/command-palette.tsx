@@ -12,18 +12,22 @@ import type {
   SearchActionItem,
   TopicConfigItem,
 } from "@/lib/search/types";
-import type { Post, Series } from "@/lib/content";
+import type { Post, Series, Path, Tip } from "@/lib/content";
 import { siteConfig } from "@config/site";
 import { topicsConfig } from "@config/topics";
 
 export interface CommandPaletteProps {
   posts?: Post[];
   series?: Series[];
+  paths?: Path[];
+  tips?: Tip[];
   topics?: TopicConfigItem[];
   actions?: SearchActionItem[];
   onSelectPost?: (slug: string) => void;
   onSelectTopic?: (topicId: string) => void;
   onSelectSeries?: (seriesId: string) => void;
+  onSelectPath?: (pathId: string) => void;
+  onSelectTip?: (tipId: string) => void;
   onSelectAction?: (actionId: string) => void;
 }
 
@@ -60,11 +64,15 @@ function useSafeRouter() {
 export function CommandPalette({
   posts = [],
   series = [],
+  paths = [],
+  tips = [],
   topics = topicsConfig.topics,
   actions = defaultActions,
   onSelectPost,
   onSelectTopic,
   onSelectSeries,
+  onSelectPath,
+  onSelectTip,
   onSelectAction,
 }: CommandPaletteProps) {
   const search = useOptionalSearchPalette();
@@ -97,10 +105,10 @@ export function CommandPalette({
     }
   }, [isOpen]);
 
-  // Build search engine from current posts, series, topics, actions
+  // Build search engine from current posts, series, topics, actions, paths, tips
   const engine = useMemo(() => {
-    return buildSearchIndex(posts, series, topics, actions);
-  }, [posts, series, topics, actions]);
+    return buildSearchIndex(posts, series, topics, actions, paths, tips);
+  }, [posts, series, topics, actions, paths, tips]);
 
   // Compute results: defaults when query is empty, else indexed fuzzy search
   const results = useMemo(() => {
@@ -125,6 +133,14 @@ export function CommandPalette({
   );
   const seriesResults = useMemo(
     () => results.filter((r) => r.item.type === "series"),
+    [results]
+  );
+  const pathResults = useMemo(
+    () => results.filter((r) => r.item.type === "path"),
+    [results]
+  );
+  const tipResults = useMemo(
+    () => results.filter((r) => r.item.type === "tip"),
     [results]
   );
 
@@ -172,6 +188,24 @@ export function CommandPalette({
             }
           } else if (!onSelectSeries && router) {
             router.push(`/series/${sId}`);
+          }
+        }
+        break;
+      case "path":
+        if (item.pathId || item.slug) {
+          const pId = item.pathId || item.slug!;
+          onSelectPath?.(pId);
+          if (!onSelectPath && router) {
+            router.push(item.url || `/learn?tab=paths`);
+          }
+        }
+        break;
+      case "tip":
+        if (item.tipId || item.slug) {
+          const tId = item.tipId || item.slug!;
+          onSelectTip?.(tId);
+          if (!onSelectTip && router) {
+            router.push(item.url || `/learn?tab=tips`);
           }
         }
         break;
@@ -365,6 +399,62 @@ export function CommandPalette({
                     className="p-1.5 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-mut"
                   >
                     {postResults.map(({ item }) => (
+                      <Command.Item
+                        key={item.id}
+                        value={item.id}
+                        onSelect={() => handleSelect(item)}
+                        className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm cursor-pointer select-none outline-none transition-colors data-[selected=true]:bg-lime data-[selected=true]:text-limeink font-medium"
+                      >
+                        <div className="flex flex-col gap-0.5 truncate mr-2">
+                          <span className="truncate">{item.title}</span>
+                          {item.summary && (
+                            <span className="text-xs opacity-70 line-clamp-1 font-normal">
+                              {item.summary}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs shrink-0 opacity-65 font-normal">
+                          {item.category}
+                        </span>
+                      </Command.Item>
+                    ))}
+                  </Command.Group>
+                )}
+
+                {pathResults.length > 0 && (
+                  <Command.Group
+                    heading={siteConfig.ui.tabPathsLabel}
+                    className="p-1.5 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-mut"
+                  >
+                    {pathResults.map(({ item }) => (
+                      <Command.Item
+                        key={item.id}
+                        value={item.id}
+                        onSelect={() => handleSelect(item)}
+                        className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm cursor-pointer select-none outline-none transition-colors data-[selected=true]:bg-lime data-[selected=true]:text-limeink font-medium"
+                      >
+                        <div className="flex flex-col gap-0.5 truncate mr-2">
+                          <span className="truncate">{item.title}</span>
+                          {item.summary && (
+                            <span className="text-xs opacity-70 line-clamp-1 font-normal">
+                              {item.summary}
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs shrink-0 opacity-65 font-normal">
+                          {item.category}
+                        </span>
+                      </Command.Item>
+                    ))}
+                  </Command.Group>
+                )}
+
+                {tipResults.length > 0 && (
+                  <Command.Group
+                    heading={siteConfig.ui.tabTipsLabel}
+                    className="p-1.5 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-mut"
+                  >
+                    {tipResults.map(({ item }) => (
                       <Command.Item
                         key={item.id}
                         value={item.id}

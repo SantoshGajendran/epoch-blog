@@ -1,8 +1,14 @@
 import type MiniSearch from "minisearch";
 import type { Topic } from "@config/schemas/topics";
-import type { Post, Series } from "@/lib/content";
+import type { Post, Series, Path, Tip } from "@/lib/content";
 
-export type SearchItemType = "post" | "topic" | "series" | "action";
+export type SearchItemType =
+  | "post"
+  | "topic"
+  | "series"
+  | "action"
+  | "path"
+  | "tip";
 
 export interface SearchItem {
   id: string;
@@ -13,6 +19,8 @@ export interface SearchItem {
   topicId?: string;
   seriesId?: string;
   actionId?: string;
+  pathId?: string;
+  tipId?: string;
   category: string;
   tags?: string[];
   url?: string;
@@ -42,4 +50,4 @@ export interface SearchEngine {
   getDefaults: () => SearchResult[];
 }
 
-export type { Post, Series, Topic };
+export type { Post, Series, Topic, Path, Tip };

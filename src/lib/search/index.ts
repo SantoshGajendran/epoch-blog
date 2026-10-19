@@ -1,6 +1,6 @@
 import MiniSearch from "minisearch";
 import { siteConfig } from "@config/site";
-import type { Post, Series } from "@/lib/content";
+import type { Post, Series, Path, Tip } from "@/lib/content";
 import type {
   SearchItem,
   SearchResult,
@@ -16,7 +16,9 @@ export function buildSearchIndex(
   posts: Post[],
   series: Series[],
   topics: TopicConfigItem[],
-  actions: SearchActionItem[] = []
+  actions: SearchActionItem[] = [],
+  paths: Path[] = [],
+  tips: Tip[] = []
 ): SearchEngine {
   const items: SearchItem[] = [];
   const itemsMap = new Map<string, SearchItem>();
@@ -110,7 +112,41 @@ export function buildSearchIndex(
     actionItems.push(actionItem);
   }
 
-  // 5. Initialize MiniSearch
+  // 5. Index Paths
+  for (const p of paths) {
+    const pathItem: SearchItem = {
+      id: registerUniqueId(p.id, "path"),
+      title: p.title,
+      summary: p.summary,
+      type: "path",
+      slug: p.slug,
+      pathId: p.id,
+      category: siteConfig.ui.tabPathsLabel,
+      tags: [p.badge, p.level],
+      url: p.permalink || `/learn?tab=paths`,
+    };
+    items.push(pathItem);
+    itemsMap.set(pathItem.id, pathItem);
+  }
+
+  // 6. Index Tips
+  for (const t of tips) {
+    const tipItem: SearchItem = {
+      id: registerUniqueId(t.id, "tip"),
+      title: t.title,
+      summary: t.summary,
+      type: "tip",
+      slug: t.slug,
+      tipId: t.id,
+      category: siteConfig.ui.tabTipsLabel,
+      tags: [...t.badges],
+      url: t.permalink || `/learn?tab=tips`,
+    };
+    items.push(tipItem);
+    itemsMap.set(tipItem.id, tipItem);
+  }
+
+  // 7. Initialize MiniSearch
   const miniSearch: SearchIndex = new MiniSearch<SearchItem>({
     fields: ["title", "summary", "tags", "category"],
     storeFields: [
@@ -122,6 +158,8 @@ export function buildSearchIndex(
       "topicId",
       "seriesId",
       "actionId",
+      "pathId",
+      "tipId",
       "category",
       "tags",
       "url",

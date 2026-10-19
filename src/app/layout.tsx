@@ -5,7 +5,7 @@ import { SoundProvider } from "@/lib/audio";
 import { SearchProvider } from "@/lib/search/search-provider";
 import { CommandPalette } from "@/components/palette/command-palette";
 import { Header } from "@/components/layout/header";
-import { getAllPosts, getAllSeries } from "@/lib/content";
+import { getAllPosts, getAllSeries, getAllPaths, getAllTips } from "@/lib/content";
 import { siteConfig } from "@config/index";
 import "./globals.css";
 
@@ -28,6 +28,8 @@ export default function RootLayout({
 }>) {
   const posts = getAllPosts();
   const series = getAllSeries();
+  const paths = getAllPaths();
+  const tips = getAllTips();
 
   return (
     <html lang="en" className={spaceGrotesk.variable} suppressHydrationWarning>
@@ -37,7 +39,12 @@ export default function RootLayout({
             <SearchProvider>
               <Header />
               <div className="flex-1">{children}</div>
-              <CommandPalette posts={posts} series={series} />
+              <CommandPalette
+                posts={posts}
+                series={series}
+                paths={paths}
+                tips={tips}
+              />
             </SearchProvider>
           </SoundProvider>
         </ThemeProvider>

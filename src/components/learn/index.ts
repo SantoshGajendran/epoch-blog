@@ -22,3 +22,9 @@ export {
   SeriesRoadmapView,
   type SeriesRoadmapViewProps,
 } from "./series-roadmap-view";
+
+export {
+  LearnHubView,
+  type LearnHubViewProps,
+  type LearnTab,
+} from "./learn-hub-view";
