@@ -62,5 +62,17 @@ export const siteConfig: SiteConfig = siteConfigSchema.parse({
     telemetrySynthActiveLabel: "Synth: active",
     telemetrySynthMutedLabel: "Muted",
     audioVisualizerAriaLabel: "Audio frequency visualizer",
+    navLearnLabel: "Learn",
+    learnHubTitle: "Learning Hub",
+    learnHubTagline:
+      "Structured paths, deep-dive series, and production tips for modern AI systems engineering.",
+    tabPathsLabel: "Learning paths",
+    tabSeriesLabel: "Series roadmaps",
+    tabTipsLabel: "Tips & tricks",
+    copySnippetLabel: "Copy snippet",
+    copiedSnippetLabel: "Copied!",
+    progressCompletedLabel: "Completed",
+    milestonesLabel: "Milestones",
+    filterAllLabel: "All",
   },
 });

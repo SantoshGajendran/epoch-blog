@@ -63,6 +63,19 @@ export const siteConfigSchema = z.object({
     telemetrySynthActiveLabel: z.string().default("Synth: active"),
     telemetrySynthMutedLabel: z.string().default("Muted"),
     audioVisualizerAriaLabel: z.string().default("Audio frequency visualizer"),
+    navLearnLabel: z.string().default("Learn"),
+    learnHubTitle: z.string().default("Learning Hub"),
+    learnHubTagline: z.string().default(
+      "Structured paths, deep-dive series, and production tips for modern AI systems engineering."
+    ),
+    tabPathsLabel: z.string().default("Learning paths"),
+    tabSeriesLabel: z.string().default("Series roadmaps"),
+    tabTipsLabel: z.string().default("Tips & tricks"),
+    copySnippetLabel: z.string().default("Copy snippet"),
+    copiedSnippetLabel: z.string().default("Copied!"),
+    progressCompletedLabel: z.string().default("Completed"),
+    milestonesLabel: z.string().default("Milestones"),
+    filterAllLabel: z.string().default("All"),
   }),
 });
 
